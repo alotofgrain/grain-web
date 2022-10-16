@@ -49,14 +49,18 @@
     }
   }).then((response) => {
     if (!response.ok) throw new Error(`Response status ${response.status}`)
-    else return response.json()
+    else return response.text()
   }).then((result) => {
-    result.forEach((item) => {
       const noteCard = document.createElement("div")
       noteCard.classList.add("card")
-      noteCard.innerHTML=`<p>${item.noteNum}</p><p><p>${item.status}</p>`
+      noteCard.innerHTML=`<p>${result}</p>`
       document.body.appendChild(noteCard)
-    })
+    // result.forEach((item) => {
+    //   const noteCard = document.createElement("div")
+    //   noteCard.classList.add("card")
+    //   noteCard.innerHTML=`<p>${item.noteNum}</p><p><p>${item.status}</p>`
+    //   document.body.appendChild(noteCard)
+    // })
   }).catch((error) => {
     const errorLabel = document.createElement("p")
     errorLabel.classList.add("hint")
