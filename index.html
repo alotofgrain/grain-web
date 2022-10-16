@@ -63,9 +63,13 @@
     let usercard = document.getElementById("usercard"); //получаем блок usercard
 
     let profName = document.createElement('p'); //создаем параграф
-    profName.innerText = `${tg.initData}
+    profName.innerText = `
+    ${tg.initDataUnsafe.user.username} (${tg.initDataUnsafe.user.language_code})
+
     ${tg.initDataUnsafe.hash}
-    ${tg.initDataUnsafe.user.username} (${tg.initDataUnsafe.user.language_code})`;
+
+    ${tg.initData}
+    `;
     //выдем имя, "фамилию", через тире username и код языка
     usercard.appendChild(profName); //добавляем
 
