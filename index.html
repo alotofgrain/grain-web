@@ -64,7 +64,7 @@
   }).catch((error) => {
     const errorLabel = document.createElement("p")
     errorLabel.classList.add("hint")
-    errorLabel.textContent = error.toString()
+    errorLabel.textContent = `${error.message}\n${error.stack}`
     document.body.appendChild(errorLabel)
   })
 </script>
