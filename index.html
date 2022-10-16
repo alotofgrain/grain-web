@@ -72,5 +72,19 @@
     let userid = document.createElement('p'); //создаем еще параграф
     userid.innerText = `${tg.initDataUnsafe.user.id}`; //показываем user_id
     usercard.appendChild(userid); //добавляем
+    document.createEvent("p").innerText = window.Telegram.WebApp.initData
+    document.createEvent("p").innerText = window.Telegram.WebApp.initDataUnsafe.hash
+
+    fetch("http://192.168.0.90:8080", {
+      mode: "cors",
+      headers: {
+        "X-WebAppData": window.Telegram.WebApp.initData,
+        "X-WebAppSignature": window.Telegram.WebApp.initDataUnsafe.hash
+      }
+    }).then({
+
+    }).catch({
+
+    })
   </script>
 </html>
