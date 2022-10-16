@@ -45,7 +45,8 @@
   fetch("http://192.168.0.190:8080/api/v1/grainnotes/my", {
     headers: {
       "X-WebAppData": tg.initData,
-    }
+    },
+    mode: "cors"
   }).then((response) => {
     if (!response.ok) throw new Error(`Response status ${response.status}`)
     else return response.json()
@@ -59,7 +60,7 @@
   }).catch((error) => {
     const errorLabel = document.createElement("p")
     errorLabel.classList.add("hint")
-    errorLabel.textContent = `ver 2. ${error}`
+    errorLabel.textContent = `ver 3. ${error}`
     document.body.appendChild(errorLabel)
   })
 </script>
