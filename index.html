@@ -43,28 +43,23 @@
 <script>
   const tg = window.Telegram.WebApp;
   fetch("http://192.168.0.190:8080/api/v1/grainnotes/my", {
-    mode: "cors",
     headers: {
       "X-WebAppData": tg.initData,
     }
   }).then((response) => {
     if (!response.ok) throw new Error(`Response status ${response.status}`)
-    else return response.text()
+    else return response.json()
   }).then((result) => {
+    result.forEach((item) => {
       const noteCard = document.createElement("div")
       noteCard.classList.add("card")
-      noteCard.innerHTML=`<p>${result}</p>`
+      noteCard.innerHTML=`<p>${item.noteNum}</p><p><p>${item.status}</p>`
       document.body.appendChild(noteCard)
-    // result.forEach((item) => {
-    //   const noteCard = document.createElement("div")
-    //   noteCard.classList.add("card")
-    //   noteCard.innerHTML=`<p>${item.noteNum}</p><p><p>${item.status}</p>`
-    //   document.body.appendChild(noteCard)
-    // })
+    })
   }).catch((error) => {
     const errorLabel = document.createElement("p")
     errorLabel.classList.add("hint")
-    errorLabel.textContent = `${error.message}\n${error.stack}`
+    errorLabel.textContent = `${error}`
     document.body.appendChild(errorLabel)
   })
 </script>
