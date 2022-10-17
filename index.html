@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Title</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script> const pageVersion = 1 </script>
   <style>
       body {
           color: var(--tg-theme-text-color);
@@ -42,26 +43,98 @@
 </body>
 <script>
   const tg = window.Telegram.WebApp;
-  fetch("http://192.168.0.190:8080/api/v1/grainnotes/my", {
-    headers: {
-      "X-WebAppData": tg.initData,
+  // fetch("http://192.168.0.190:8080/api/v1/grainnotes/my", {
+  //   headers: {
+  //     "X-WebAppData": tg.initData,
+  //   },
+  //   mode: "cors"
+  // }).then((response) => {
+  //   if (!response.ok) throw new Error(`Response status ${response.status}`)
+  //   else return response.json()
+  // }).then((result) => {
+  //   result.forEach((item) => addNoteCard(item))
+  // }).catch((error) => displayError(error))
+  const stubData = [
+    {
+      id: 1,
+      intStatus: 1,
+      docNum: "R1CC39M0MB1F8CS",
+      granary: "Элеватор; Емкость зернохранилища: 65 тыс. тонн; Акмолинская область, Бурабайский район, с.Кенесары, ул.Береке, 1Б",
+      price: "764520,0",
+      weight: "6648,0",
+      crop: "Пшеница мягкая яровая (Triticum aestivum L)",
+      productDetails: "Культура: Пшеница мягкая яровая (Triticum aestivum L); Зачтенный физический вес, кг: 6 648,00; Класс: 3 класс;\n" +
+          "Год урожая: 2022; Категория: Продовольственное зерно; Сорт: Нет; Репродукция: Нет; Класс посевного стандарта: Нет;\n" +
+          "Влажность, %: 14,00; Примесь сорная, %: 2,00; Примесь зерновая/масличная, %: 5,00; Зараженность: Не обнаружено;\n" +
+          "Запах: Нормальный; Цвет: Обесцвеченный (3 степень); Тип: I; Натура: 800,00; Клейковина, %: 30,00;\n" +
+          "Клейковина, усл.ед.: 82,00; Пленчатость, %: 0,00; Число падения, с: 200,00; Белок, %: 15,20; Стекловидность, %: 0,00;\n" +
+          "Прочие показатели: .;"
+
     },
-    mode: "cors"
-  }).then((response) => {
-    if (!response.ok) throw new Error(`Response status ${response.status}`)
-    else return response.json()
-  }).then((result) => {
-    result.forEach((item) => {
-      const noteCard = document.createElement("div")
-      noteCard.classList.add("card")
-      noteCard.innerHTML=`<p>${item.noteNum}</p><p><p>${item.status}</p>`
-      document.body.appendChild(noteCard)
-    })
-  }).catch((error) => {
+
+    {
+      id: 2,
+      intStatus: 1,
+      docNum: "R1CC39M0MB1F8CS",
+      granary: "Элеватор; Емкость зернохранилища: 65 тыс. тонн; Акмолинская область, Бурабайский район, с.Кенесары, ул.Береке, 1Б",
+      price: "764520,0",
+      weight: "6648,0",
+      crop: "Пшеница мягкая яровая (Triticum aestivum L)",
+      productDetails: "Культура: Пшеница мягкая яровая (Triticum aestivum L); Зачтенный физический вес, кг: 6 648,00; Класс: 3 класс;\n" +
+          "Год урожая: 2022; Категория: Продовольственное зерно; Сорт: Нет; Репродукция: Нет; Класс посевного стандарта: Нет;\n" +
+          "Влажность, %: 14,00; Примесь сорная, %: 2,00; Примесь зерновая/масличная, %: 5,00; Зараженность: Не обнаружено;\n" +
+          "Запах: Нормальный; Цвет: Обесцвеченный (3 степень); Тип: I; Натура: 800,00; Клейковина, %: 30,00;\n" +
+          "Клейковина, усл.ед.: 82,00; Пленчатость, %: 0,00; Число падения, с: 200,00; Белок, %: 15,20; Стекловидность, %: 0,00;\n" +
+          "Прочие показатели: .;"
+
+    },
+
+    {
+      id: 3,
+      intStatus: 1,
+      docNum: "R1CC39M0MB1F8CS",
+      granary: "Элеватор; Емкость зернохранилища: 65 тыс. тонн; Акмолинская область, Бурабайский район, с.Кенесары, ул.Береке, 1Б",
+      price: "764520,0",
+      weight: "6648,0",
+      crop: "Пшеница мягкая яровая (Triticum aestivum L)",
+      productDetails: "Культура: Пшеница мягкая яровая (Triticum aestivum L); Зачтенный физический вес, кг: 6 648,00; Класс: 3 класс;\n" +
+          "Год урожая: 2022; Категория: Продовольственное зерно; Сорт: Нет; Репродукция: Нет; Класс посевного стандарта: Нет;\n" +
+          "Влажность, %: 14,00; Примесь сорная, %: 2,00; Примесь зерновая/масличная, %: 5,00; Зараженность: Не обнаружено;\n" +
+          "Запах: Нормальный; Цвет: Обесцвеченный (3 степень); Тип: I; Натура: 800,00; Клейковина, %: 30,00;\n" +
+          "Клейковина, усл.ед.: 82,00; Пленчатость, %: 0,00; Число падения, с: 200,00; Белок, %: 15,20; Стекловидность, %: 0,00;\n" +
+          "Прочие показатели: .;"
+
+    }
+
+  ]
+
+  stubData.forEach((item) => addNoteCard(item))
+
+  function addNoteCard(item) {
+    const noteCard = document.createElement("div")
+    noteCard.innerHTML=`<div style="display: flex">
+                          <span style="flex-grow: 1; font-weight: bold">${item.docNum}</span>
+                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${item.price} тг</span>
+                        </div>
+                        <div style="display: flex">
+                          <span style="flex-grow: 1; font-size: smaller">${item.crop}</span>
+                          <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${item.weight} кг</span>
+                        </div>
+                        <div style ="font-size: small">${item.granary} кг</div>
+                        <div style="display: flex">
+                          <span>...</span>
+                          <span>1</span>
+                          <span>2</span>
+                        </div>`
+
+    document.body.appendChild(noteCard)
+  }
+
+  function displayError(error) {
     const errorLabel = document.createElement("p")
     errorLabel.classList.add("hint")
-    errorLabel.textContent = `ver 4. ${error}`
+    errorLabel.textContent = `ver ${pageVersion}. ${error}`
     document.body.appendChild(errorLabel)
-  })
+  }
 </script>
 </html>
