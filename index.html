@@ -5,6 +5,7 @@
   <title>Title</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script> const pageVersion = 1 </script>
+  <link rel="stylesheet" href="css/fontello-grain.css">
   <style>
       body {
           color: var(--tg-theme-text-color);
@@ -122,9 +123,9 @@
                         </div>
                         <div style ="font-size: small">${item.granary} кг</div>
                         <div style="display: flex">
-                          <span>...</span>
-                          <span>1</span>
-                          <span>2</span>
+                          <span style="flex-grow: 1"><i class="icon-menu"></i></span>
+                          <span><i class="icon-chat-empty"></i></span>
+                          <span style="font-family: monospace"><i class="icon-star"></i>5</span>
                         </div>`
 
     document.body.appendChild(noteCard)
