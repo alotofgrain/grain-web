@@ -235,12 +235,14 @@
                         </div>
                         <div style ="font-size: small">${item.granary} кг</div>
                         <div style="display: flex">
-                          <span style="flex-grow: 0"><i class="icon-menu"></i></span>
+                          <span style="flex-grow: 0"><i data-id=${item.id} class="icon-menu"></i></span>
                           <span style="flex-grow: 1"><i class="icon-attention"></i></span>
                           <span><i class="icon-chat-empty"></i></span>
                           <span style="font-family: monospace"><i class="icon-star"></i>5</span>
                         </div>`
-
+    noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
+    noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
+    noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
     document.body.appendChild(noteCard)
   }
 
@@ -250,5 +252,28 @@
     errorLabel.textContent = `ver ${pageVersion}. ${error}`
     document.body.appendChild(errorLabel)
   }
+
+  function onClickItemMenu(event) {
+    const noteId = event.target.getAttribute("data-id")
+    if (event.target.classList.contains("icon-menu")) {
+      event.target.innerText = noteId
+      event.target.classList.remove("icon-menu")
+      event.target.classList.add("icon-star")
+    } else {
+      event.target.classList.remove("icon-star")
+      event.target.classList.add("icon-menu")
+      event.target.innerText = ""
+    }
+  }
+
+  function onPointerDownItemMenu(event) {
+    event.target.style.fontSize="smaller"
+  }
+
+  function onPointerUpItemMenu(event) {
+    event.target.style.fontSize="inherit"
+  }
+
+
 </script>
 </html>
