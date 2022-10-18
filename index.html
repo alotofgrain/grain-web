@@ -259,6 +259,8 @@
       event.target.innerText = noteId
       event.target.classList.remove("icon-menu")
       event.target.classList.add("icon-star")
+      const url = document.URL
+      window.location.href= `page2.html#${url.hash}`
     } else {
       event.target.classList.remove("icon-star")
       event.target.classList.add("icon-menu")
