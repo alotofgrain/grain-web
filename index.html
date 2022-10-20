@@ -225,7 +225,8 @@
 
   function addNoteCard(item) {
     const noteCard = document.createElement("div")
-    noteCard.innerHTML=`<div style="display: flex">
+    noteCard.style="margin-bottom: 20px;"
+    noteCard.innerHTML=`<div style="display: flex;">
                           <span style="flex-grow: 1; font-weight: bold">${item.docNum}</span>
                           <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${item.price} тг</span>
                         </div>
@@ -259,8 +260,6 @@
       event.target.innerText = noteId
       event.target.classList.remove("icon-menu")
       event.target.classList.add("icon-star")
-      const url = document.URL
-      window.location.href= `page2.html#${url.hash}`
     } else {
       event.target.classList.remove("icon-star")
       event.target.classList.add("icon-menu")
