@@ -79,14 +79,10 @@
     noteCard.innerHTML=`${offerHTML(item)}
                             <div style="display: flex">
                           <button data-id=${item.id} id="btnBuy" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Купить</button>
-                          <span style="flex-grow: 1"><i class="icon-attention" data-id=${item.id}></i></span>
-                          <span><i class="icon-chat-empty"></i></span>
+                          <!--span style="flex-grow: 1">${""}</span-->
                           <span style="font-family: monospace"><i class="icon-star"></i>5</span>
                         </div>
     `
-    // noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
-    //noteCard.querySelector("#btnBuy").addEventListener("pointerdown", onPointerDownItemMenu)
-    //noteCard.querySelector("#btnBuy").addEventListener("pointerup", onPointerUpItemMenu)
     noteCard.querySelector("#btnBuy").addEventListener("click", onClickBuy)
     document.body.appendChild(noteCard)
   }
@@ -151,25 +147,31 @@
     dealDialog.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Покупка</div>
                         ${offerHTML(offer)}
-                        <form style="display: flex; flex-direction: column; align-items: center;">
-                          <div style="font-size: xx-large; font-family: monospace; margin-top: 30px; margin-bottom: 30px;">
-                            <output name="sum" >${offer.price * offer.qty}</output>&nbspтг
+                        <form style="display: flex; flex-direction: column;">
+                          <div style="display:flex; font-size: xx-large;  margin-top: 30px; margin-bottom: 30px;">
+                            <span style="flex-grow: 1">Сумма:</span>
+                            <output name="sum" style="flex-shrink: 0; font-size:xxx-large; font-family: monospace;">${offer.price * offer.qty}</output>
+                            <span style="flex-shrink: 0">&nbspтг</span>
+                          </div>
+                          <div style="display:flex; font-size: x-large;  margin-bottom: 20px;">
+                            <span style="flex-grow: 1">Цена:</span>
+                            <output name="price" style="flex-shrink: 0; font-size:xx-large; font-family: monospace;">${offer.price}</output>
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
                           </div>
 
-
-                          <input type="number" min="${offer.price*0.9}" max="${offer.price*1.1}" step ="10" value= "${offer.price}"  readonly>
-                          <div style="display: flex">
-                          <input name="price" type="range" min="${offer.qty/2}" max="${offer.qty}" value="${offer.qty}"
-                          oninput="this.form.qtyOutput.value=this.value; this.form.sum.value=this.value*this.form.price.value;">
-                          <output name="qtyOutput">${offer.qty}</output>
+                          <div style="display:flex; font-size: x-large;  margin-bottom: 20px;">
+                            <span style="flex-grow: 0">Количество:</span>
+                            <input name="qty" type="range" min="${offer.qty/2}" max="${offer.qty}" value="${offer.qty}"
+                              oninput="this.form.qtyText.value=this.value; this.form.sum.value=this.value*this.form.price.value;"
+                              style="flex-grow: 1; margin-left: 2em; margin-right: 2em;">
+                            <output name="qtyText" style="flex-shrink: 0; font-size:xx-large; font-family: monospace;">${offer.price}</output>
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspт</span>
                           </div>
-                        </form>
-                        <div style="display: flex">
-                          <span style="flex-grow: 0"><i data-id=${offer.id} class="icon-menu"></i></span>
-                          <span style="flex-grow: 1"><i class="icon-attention"></i></span>
-                          <span><i class="icon-chat-empty"></i></span>
-                          <span style="font-family: monospace"><i class="icon-star"></i>5</span>
-                        </div>`
+                          <div style="text-align: center; font-size: xx-large;">
+                                 <button data-id=${offer.id} id="btnBuy" style="font-size: inherit; margin: 1em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Оформить</button>
+                                 <button data-id=${offer.id} id="btnCancel" style="font-size: inherit; margin: 1em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
+                          </div>
+                        </form>`
     // noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
     // noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
     // noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
