@@ -145,7 +145,7 @@
     const offer = stubDataSource.offersForBuyer.find((value => value.id = offerId))
     const dealDialog = document.createElement("div")
     dealDialog.innerHTML=`
-                        <div style ="font-size: x-large; text-align: center; color: ${tg.headerColor}; margin-bottom: 20px;  ">Покупка</div>
+                        <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Покупка</div>
                         ${offerHTML(offer)}
                         <form style="display: flex; flex-direction: column; align-items: center;">
                           <div style="font-size: xx-large; font-family: monospace; margin-top: 30px; margin-bottom: 30px;">
