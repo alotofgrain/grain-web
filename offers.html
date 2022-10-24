@@ -78,15 +78,15 @@
     noteCard.style="margin-bottom: 20px;"
     noteCard.innerHTML=`${offerHTML(item)}
                             <div style="display: flex">
-                          <span style="flex-grow: 0"><i data-id=${item.id} class="icon-menu"></i></span>
+                          <span style="flex-grow: 0; border-radius:25%; background-color: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color)">Купить</span>
                           <span style="flex-grow: 1"><i class="icon-attention" data-id=${item.id}></i></span>
                           <span><i class="icon-chat-empty"></i></span>
                           <span style="font-family: monospace"><i class="icon-star"></i>5</span>
                         </div>
     `
-    noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
-    noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
-    noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
+    // noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
+    // noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
+    // noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
     noteCard.querySelector(".icon-attention").addEventListener("click", onClickBuy)
     document.body.appendChild(noteCard)
   }
