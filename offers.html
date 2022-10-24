@@ -7,6 +7,7 @@
   <script>
     const pageVersion = 1
     const useStubData = true
+    var stubDataSource = null
     if (useStubData) { var stubData = import("./stub-data.js") }
   </script>
   <link rel="stylesheet" href="css/fontello-grain.css">
@@ -61,38 +62,50 @@
   //   result.forEach((item) => addNoteCard(item))
   // }).catch((error) => displayError(error))
 
-  stubData.then((v) =>
-      v.offersForBuyer.forEach((item) => addOfferCard(item))
+  stubData.then((v) => {
+        stubDataSource = v
+        displayOffers()
+      }
   );
 
+  function displayOffers() {
+    document.body.innerHTML = ""
+    stubDataSource.offersForBuyer.forEach((item) => addOfferCard(item))
+  }
 
   function addOfferCard(item) {
     const noteCard = document.createElement("div")
     noteCard.style="margin-bottom: 20px;"
-    const additionalProperties =["Год урожая", "Влажность, %", "Примесь сорная, %", "Примесь зерновая/масличная, %",
-      "Натура", "Клейковина, %",  "Клейковина, усл.ед.", "Число падения, с", "Белок, %", "Стекловидность, %"]
-    const additionalPropertiesHtml = additionalProperties.map( (propName) =>
-        `<span style ="flex-shrink: 0; font-size: smaller">${propName}:&nbsp${item[propName]}&nbsp&nbsp</span>`
-    ).join("")
-    noteCard.innerHTML=`<div style="display: flex;">
-                          <span style="flex-grow: 1; font-weight: bold">${item["Культура"]}</span>
-                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${item.price} тг</span>
-                        </div>
-                        <div style="display: flex">
-                          <span style="flex-grow: 1; font-size: smaller">${item["Класс"]}</span>
-                          <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${item.qty} кг</span>
-                        </div>
-                        <div style = "display: flex; flex-wrap: wrap;">${additionalPropertiesHtml}</div>
-                        <div style="display: flex">
+    noteCard.innerHTML=`${offerHTML(item)}
+                            <div style="display: flex">
                           <span style="flex-grow: 0"><i data-id=${item.id} class="icon-menu"></i></span>
-                          <span style="flex-grow: 1"><i class="icon-attention"></i></span>
+                          <span style="flex-grow: 1"><i class="icon-attention" data-id=${item.id}></i></span>
                           <span><i class="icon-chat-empty"></i></span>
                           <span style="font-family: monospace"><i class="icon-star"></i>5</span>
-                        </div>`
+                        </div>
+    `
     noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
     noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
     noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
+    noteCard.querySelector(".icon-attention").addEventListener("click", onClickBuy)
     document.body.appendChild(noteCard)
+  }
+
+  function offerHTML(offer) {
+    const additionalProperties =["Год урожая", "Влажность, %", "Примесь сорная, %", "Примесь зерновая/масличная, %",
+      "Натура", "Клейковина, %",  "Клейковина, усл.ед.", "Число падения, с", "Белок, %", "Стекловидность, %"]
+    const additionalPropertiesHtml = additionalProperties.map( (propName) =>
+        `<span style ="flex-shrink: 0; font-size: small">${propName}:&nbsp${offer[propName]}&nbsp&nbsp</span>`
+    ).join("")
+    return `<div style="display: flex;">
+                          <span style="flex-grow: 1; font-weight: bold">${offer["Культура"]}</span>
+                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
+                        </div>
+                        <div style="display: flex">
+                          <span style="flex-grow: 1;">${offer["Класс"]}</span>
+                          <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${offer.qty} кг</span>
+                        </div>
+                        <div style = "display: flex; flex-wrap: wrap;">${additionalPropertiesHtml}</div>`
   }
 
   function displayError(error) {
@@ -123,28 +136,41 @@
     event.target.style.fontSize="inherit"
   }
 
-  function displayDealDialog(event) {
-    const dialogDialog = document.createElement("div")
-    noteCard.style="margin-bottom: 20px;"
-    noteCard.innerHTML=`<div style="display: flex;">
-                          <span style="flex-grow: 1; font-weight: bold">${item.docNum}</span>
-                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${item.price} тг</span>
-                        </div>
+  function onClickBuy(event) {
+    const offerId = event.target.getAttribute("data-id")
+    displayDealDialog(offerId)
+  }
+
+  function displayDealDialog(offerId) {
+    const offer = stubDataSource.offersForBuyer.find((value => value.id = offerId))
+    const dealDialog = document.createElement("div")
+    dealDialog.innerHTML=`
+                        <div style ="font-size: x-large; text-align: center; color: ${tg.headerColor}; margin-bottom: 20px;  ">Покупка</div>
+                        ${offerHTML(offer)}
+                        <form style="display: flex; flex-direction: column; align-items: center;">
+                          <div style="font-size: xx-large; font-family: monospace; margin-top: 30px; margin-bottom: 30px;">
+                            <output name="sum" >${offer.price * offer.qty}</output>&nbspтг
+                          </div>
+
+
+                          <input type="number" min="${offer.price*0.9}" max="${offer.price*1.1}" step ="10" value= "${offer.price}"  readonly>
+                          <div style="display: flex">
+                          <input name="price" type="range" min="${offer.qty/2}" max="${offer.qty}" value="${offer.qty}"
+                          oninput="this.form.qtyOutput.value=this.value; this.form.sum.value=this.value*this.form.price.value;">
+                          <output name="qtyOutput">${offer.qty}</output>
+                          </div>
+                        </form>
                         <div style="display: flex">
-                          <span style="flex-grow: 1; font-size: smaller">${item.crop}</span>
-                          <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${item.weight} кг</span>
-                        </div>
-                        <div style ="font-size: small">${item.granary} кг</div>
-                        <div style="display: flex">
-                          <span style="flex-grow: 0"><i data-id=${item.id} class="icon-menu"></i></span>
+                          <span style="flex-grow: 0"><i data-id=${offer.id} class="icon-menu"></i></span>
                           <span style="flex-grow: 1"><i class="icon-attention"></i></span>
                           <span><i class="icon-chat-empty"></i></span>
                           <span style="font-family: monospace"><i class="icon-star"></i>5</span>
                         </div>`
-    noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
-    noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
-    noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
-    document.body.appendChild(noteCard)
+    // noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
+    // noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
+    // noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
+    document.body.innerHTML = ""
+    document.body.appendChild(dealDialog)
   }
 
 
