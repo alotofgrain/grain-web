@@ -5,7 +5,7 @@
   <title>Title</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    const pageVersion = 1
+    const pageVersion = 2
     const useStubData = true
     var stubDataSource = null
     if (useStubData) { var stubData = import("./stub-data.js") }
@@ -81,10 +81,10 @@
                           <button data-id=${item.id} id="btnBuy" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Купить</button>
                           <!--span style="flex-grow: 1">${""}</span-->
                           <span style="font-family: monospace"><i class="icon-star"></i>5</span>
-                        </div>
-    `
+                        </div>`
     noteCard.querySelector("#btnBuy").addEventListener("click", onClickBuy)
     document.body.appendChild(noteCard)
+    document.write(`ver ${ver}`)
   }
 
   function offerHTML(offer) {
