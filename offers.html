@@ -71,6 +71,7 @@
   function displayOffers() {
     document.body.innerHTML = ""
     stubDataSource.offersForBuyer.forEach((item) => addOfferCard(item))
+
   }
 
   function addOfferCard(item) {
@@ -80,11 +81,10 @@
                             <div style="display: flex">
                           <button data-id=${item.id} id="btnBuy" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Купить</button>
                           <!--span style="flex-grow: 1">${""}</span-->
-                          <span style="font-family: monospace"><i class="icon-star"></i>5</span>
+                          <span style="font-family: monospace"><i class="icon-star"></i>${pageVersion}</span>
                         </div>`
     noteCard.querySelector("#btnBuy").addEventListener("click", onClickBuy)
     document.body.appendChild(noteCard)
-    document.write(`ver ${ver}`)
   }
 
   function offerHTML(offer) {
