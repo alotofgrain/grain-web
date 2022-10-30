@@ -7,6 +7,7 @@
   <script>
     const pageVersion = 1
     const useStubData = true
+    var stubDataSource = null
     if (useStubData) { var stubData = import("./stub-data.js") }
   </script>
   <link rel="stylesheet" href="css/fontello-grain.css">
@@ -61,27 +62,24 @@
   //   result.forEach((item) => addNoteCard(item))
   // }).catch((error) => displayError(error))
 
-  stubData.then((v) =>
-      v.sellerOffers.forEach((item) => addOfferCard(item))
-  );
+  stubData.then((v) => {
+        stubDataSource = v
+        displayOffers()
+      }
+  )
+
+
+  function displayOffers() {
+    document.body.innerHTML = ""
+    stubDataSource.sellerOffers.forEach((item) => addOfferCard(item))
+  }
+
 
 
   function addOfferCard(item) {
     const noteCard = document.createElement("div")
     noteCard.style="margin-bottom: 20px;"
-    noteCard.innerHTML=`<div style="display: flex;">
-                          <span style="flex-grow: 1; font-weight: bold">${item["Номер ЗР"]}</span>
-                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${item.price} тг</span>
-                        </div>
-                        <div style="display: flex">
-                          <span style="flex-grow: 1; font-size: smaller">${item["Культура"]}</span>
-                          <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${item.qty} кг</span>
-                        </div>
-                        <div style ="font-size: small">Дата выпуска: ${item["Дата выпуска"]}</div>
-                        <div style="display: flex">
-                          <span style ="flex-grow: 1; font-size: small">${item["Хлебоприемное предприятие_short"]}</span>
-                          <span style ="flex-shrink: 0; font-size: small">${item["Зернохранилище_short"]}</span>
-                        </div>
+    noteCard.innerHTML=`${offerHTML(item)}
                         <div style="display: flex">
                           <span style="flex-grow: 0"><i data-id=${item.id} class="icon-menu"></i></span>
                           <span style="flex-grow: 1"><i class="icon-attention"></i></span>
@@ -89,9 +87,23 @@
                           <span style="font-family: monospace"><i class="icon-star"></i>5</span>
                         </div>`
     noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
-    noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
-    noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
     document.body.appendChild(noteCard)
+  }
+
+  function offerHTML(offer) {
+    return `<div style="display: flex;">
+                          <span style="flex-grow: 1; font-weight: bold">${offer["Номер ЗР"]}</span>
+                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
+                        </div>
+                        <div style="display: flex">
+                          <span style="flex-grow: 1; font-size: smaller">${offer["Культура"]}</span>
+                          <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${offer.qty} кг</span>
+                        </div>
+                        <div style ="font-size: small">Дата выпуска: ${offer["Дата выпуска"]}</div>
+                        <div style="display: flex">
+                          <span style ="flex-grow: 1; font-size: small">${offer["Хлебоприемное предприятие_short"]}</span>
+                          <span style ="flex-shrink: 0; font-size: small">${offer["Зернохранилище_short"]}</span>
+                        </div>`
   }
 
   function displayError(error) {
@@ -102,24 +114,69 @@
   }
 
   function onClickItemMenu(event) {
-    const noteId = event.target.getAttribute("data-id")
-    if (event.target.classList.contains("icon-menu")) {
-      event.target.innerText = noteId
-      event.target.classList.remove("icon-menu")
-      event.target.classList.add("icon-star")
-    } else {
-      event.target.classList.remove("icon-star")
-      event.target.classList.add("icon-menu")
-      event.target.innerText = ""
-    }
+    // const noteId = event.target.getAttribute("data-id")
+    // if (event.target.classList.contains("icon-menu")) {
+    //   event.target.innerText = noteId
+    //   event.target.classList.remove("icon-menu")
+    //   event.target.classList.add("icon-star")
+    // } else {
+    //   event.target.classList.remove("icon-star")
+    //   event.target.classList.add("icon-menu")
+    //   event.target.innerText = ""
+    // }
+
+    const offerId = event.target.getAttribute("data-id")
+    displayOfferDialog(offerId)
   }
 
-  function onPointerDownItemMenu(event) {
-    event.target.style.fontSize="smaller"
+
+  function displayOfferDialog(offerId) {
+    const offer = stubDataSource.sellerOffers.find((value => value.id = offerId))
+    const offerDialog = document.createElement("div")
+    offerDialog.innerHTML=`
+                        <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Лот на продажу</div>
+                        ${offerHTML(offer)}
+                        <form style="display: flex; flex-direction: column;">
+                          <div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
+                            <span style="flex-grow: 1">Сумма:</span>
+                            <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price * offer.qty}</output>
+                            <span style="flex-shrink: 0">&nbspтг</span>
+                          </div>
+                          <div style="display:flex;  margin-bottom: 20px;">
+                            <span style="flex-grow: 1">Цена:</span>
+                            <input  name="price" style="flex-shrink: 0; font-size:x-large; font-family: monospace;" value="${offer.price}">
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
+                          </div>
+                          <div style="display:flex;  margin-bottom: 20px;">
+                            <span style="flex-grow: 1">Продавать целиком</span>
+                            <input  type="checkbox" name="price" style="flex-shrink: 0; font-size:x-large; font-family: monospace;" value="true">
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
+                          </div>
+
+                          <div style="display:flex; margin-bottom: 20px;">
+                            <span style="flex-grow: 0">Минимальное Кол-во:</span>
+                            <input name="qty" type="range" min="${offer.qty/2}" max="${offer.qty}" value="${offer.qty}"
+                              oninput="this.form.qtyText.value=this.value; this.form.sum.value=this.value*this.form.price.value;"
+                              style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
+                            <output name="qtyText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price}</output>
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspт</span>
+                          </div>
+
+                          <div style="display:flex; margin-bottom: 20px;">
+                            <span style="flex-grow: 0">С шагом:</span>
+                            <input name="qty" type="range" min="${offer.qty/2}" max="${offer.qty}" value="${offer.qty}"
+                              oninput="this.form.qtyText.value=this.value; this.form.sum.value=this.value*this.form.price.value;"
+                              style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
+                            <output name="qtyText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price}</output>
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspт</span>
+                          </div>
+
+                         <button data-id=${offer.id} id="btnСontinue" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
+                         <button data-id=${offer.id} id="btnDelete" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Удалить лот</button>
+                        </form>`
+    document.body.innerHTML = ""
+    document.body.appendChild(offerDialog)
   }
 
-  function onPointerUpItemMenu(event) {
-    event.target.style.fontSize="inherit"
-  }
 </script>
 </html>

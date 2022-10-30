@@ -66,12 +66,11 @@
         stubDataSource = v
         displayOffers()
       }
-  );
+  )
 
   function displayOffers() {
     document.body.innerHTML = ""
     stubDataSource.offersForBuyer.forEach((item) => addOfferCard(item))
-
   }
 
   function addOfferCard(item) {
@@ -81,9 +80,10 @@
                             <div style="display: flex">
                           <button data-id=${item.id} id="btnBuy" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Купить</button>
                           <!--span style="flex-grow: 1">${""}</span-->
-                          <span style="font-family: monospace"><i class="icon-star"></i>${pageVersion}</span>
+                          <span style="font-family: monospace"><i class="icon-star-empty" data-id=${item.id}></i>${pageVersion}</span>
                         </div>`
     noteCard.querySelector("#btnBuy").addEventListener("click", onClickBuy)
+    noteCard.querySelector(".icon-star-empty").addEventListener("click", onClickStar)
     document.body.appendChild(noteCard)
   }
 
@@ -111,29 +111,17 @@
     document.body.appendChild(errorLabel)
   }
 
-  function onClickItemMenu(event) {
+  function onClickStar(event) {
     const noteId = event.target.getAttribute("data-id")
-    if (event.target.classList.contains("icon-menu")) {
+    if (event.target.classList.contains("icon-star")) {
       event.target.innerText = noteId
-      event.target.classList.remove("icon-menu")
-      event.target.classList.add("icon-star")
-    } else {
       event.target.classList.remove("icon-star")
-      event.target.classList.add("icon-menu")
+      event.target.classList.add("icon-star-empty")
+    } else {
+      event.target.classList.remove("icon-star-empty")
+      event.target.classList.add("icon-star")
       event.target.innerText = ""
     }
-  }
-
-  function onPointerDownItemMenu(event) {
-    const color=event.target.style.backgroundColor
-    event.target.style.backgroundColor = event.target.style.color
-    event.target.style.color = color
-  }
-
-  function onPointerUpItemMenu(event) {
-    const color=event.target.style.backgroundColor
-    event.target.style.backgroundColor = event.target.style.color
-    event.target.style.color = color
   }
 
   function onClickBuy(event) {
@@ -164,7 +152,7 @@
                             <input name="qty" type="range" min="${offer.qty/2}" max="${offer.qty}" value="${offer.qty}"
                               oninput="this.form.qtyText.value=this.value; this.form.sum.value=this.value*this.form.price.value;"
                               style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
-                            <output name="qtyText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price}</output>
+                            <output name="qtyText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspт</span>
                           </div>
                           <div style="text-align: center; font-size: large;">
@@ -172,9 +160,6 @@
                                  <button data-id=${offer.id} id="btnCancel" style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
                           </div>
                         </form>`
-    // noteCard.querySelector(".icon-menu").addEventListener("click", onClickItemMenu)
-    // noteCard.querySelector(".icon-menu").addEventListener("pointerdown", onPointerDownItemMenu)
-    // noteCard.querySelector(".icon-menu").addEventListener("pointerup", onPointerUpItemMenu)
     document.body.innerHTML = ""
     document.body.appendChild(dealDialog)
   }
