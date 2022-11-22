@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Users</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="serviceApi.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const pageVersion = 1
+  </script>
+  <link rel="stylesheet" href="css/fontello-grain.css">
+  <style>
+      body {
+          color: var(--tg-theme-text-color);
+          background: var(--tg-theme-bg-color);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-size: 18px;
+      }
+
+      .hint {
+          color: var(--tg-theme-hint-color);
+      }
+
+      .link {
+          color: var(--tg-theme-link-color);
+      }
+
+      .button {
+          background: var(--tg-theme-button-color);
+          color: var(--tg-theme-button-text-color);
+          border: none;
+          font-size: 18px;
+      }
+
+      .button:not(:last-child) {
+          margin-bottom: 20px
+      }
+
+      #usercard {
+          text-align: center;
+      }
+  </style>
+</head>
+<body>
+</body>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand()
+  initTgWebAppData(tg.initData)
+  navigateUsers()
+
+  function navigateUsers() {
+    getUsers().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((result) => {
+      displayUsers(result)
+    }).catch((error) => displayError(error))
+  }
+
+  function displayUsers(response) {
+    document.body.innerHTML = ""
+    response.page.forEach((item) => addUserCard(item))
+  }
+
+  function addUserCard(item) {
+    const noteCard = document.createElement("div")
+    noteCard.style="margin-bottom: 20px; ; width: 100%;"
+    noteCard.innerHTML=`<div style="display: flex;">
+                          <span style="flex-grow: 1; font-weight: bold">${item.prettyName}</span>
+                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${item.id}</span>
+                        </div>
+                          <div style="display: flex">
+                            <button data-id=${item.id} id="btnMessage" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Сообщение</button>
+                            <span style="flex-grow: 1"></span>
+                            <button data-id=${item.id} id="btnRoles" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Роли</button>
+                          </div>`
+    noteCard.querySelector("#btnMessage").addEventListener("click", onClickMessage)
+    noteCard.querySelector("#btnRoles").addEventListener("click", onClickRoles)
+    document.body.appendChild(noteCard)
+  }
+
+  function onClickMessage(event) {
+    const userId = parseInt(event.target.getAttribute("data-id"))
+    chatWithUser(userId).then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+    }).catch((error) => displayError(error))
+  }
+
+  function onClickRoles(event) {
+    const userId = parseInt(event.target.getAttribute("data-id"))
+    askUserRoles(userId).then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+    }).catch((error) => displayError(error))
+  }
+
+</script>
+</html>

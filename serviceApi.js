@@ -1,5 +1,5 @@
-//const apiUrl = "https://ec2-18-184-77-249.eu-central-1.compute.amazonaws.com/api/v1"
-const apiUrl = "http://localhost:8080/api/v1"
+const apiUrl = "https://ec2-18-184-77-249.eu-central-1.compute.amazonaws.com/api/v1"
+//const apiUrl = "http://localhost:8080/api/v1"
 
 let tgWebAppData = null
 
