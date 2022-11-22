@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Offers</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="serviceApi.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const pageVersion = 1
+  </script>
+  <link rel="stylesheet" href="css/fontello-grain.css">
+  <style>
+      body {
+          color: var(--tg-theme-text-color);
+          background: var(--tg-theme-bg-color);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-size: 18px;
+      }
+
+      .grey {
+          color: grey;
+      }
+
+      .hint {
+          color: var(--tg-theme-hint-color);
+      }
+
+      .link {
+          color: var(--tg-theme-link-color);
+      }
+
+      .button {
+          background: var(--tg-theme-button-color);
+          color: var(--tg-theme-button-text-color);
+          border: none;
+          font-size: 18px;
+      }
+
+      .button:not(:last-child) {
+          margin-bottom: 20px
+      }
+
+      #usercard {
+          text-align: center;
+      }
+  </style>
+</head>
+<body>
+</body>
+<script>
+  const tg = window.Telegram.WebApp;
+  const statusMap = new Map()
+  statusMap.set("initial", "Новый")
+  statusMap.set("active", "Активный")
+  statusMap.set("dealStarted", "Сделка")
+  statusMap.set("dealRejected", "Отказано")
+  statusMap.set("completed", "Завершено")
+  statusMap.set("deleted", "Удален")
+  tg.expand()
+
+  initTgWebAppData(tg.initData)
+  const urlParameters=new URLSearchParams(window.location.search)
+  const offerId = urlParameters.get("id")
+  if (offerId == null) navigateOffers()
+  else navigateOffer(offerId)
+
+  function navigateOffers() {
+    getAccountOffers().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((response) => {
+      displayOffers(response)
+    }).catch((error) => displayError(error))
+  }
+
+
+  function displayOffers(response) {
+    document.body.innerHTML = ""
+    response.page.forEach((item) => addOfferCard(item))
+  }
+
+  function addOfferCard(item) {
+    const noteCard = document.createElement("div")
+    if (item.status === offerStatus.deleted) noteCard.classList.add("grey")
+    const disabled = (item.status===offerStatus.deleted) ? "disabled" : ""
+    const stars = (item.favoriteCount === undefined || item.favoriteCount === 0) ? "" :
+      `<span style="font-family: monospace"><i class="icon-star-empty"></i>${item.favoriteCount}</span>`
+    noteCard.style="margin-bottom: 20px; width: 100%;"
+    noteCard.innerHTML=`${offerHTML(item)}
+                        <div style="display: flex">
+                          <button data-id=${item.id} id="btnStatus" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;" ${disabled}>${statusMap.get(item.status)}</button>
+                          <div style="flex-grow: 1"></div>
+                          <!-- span style="flex-grow: 1"><i class="icon-attention"></i></span -->
+                          <!-- span><i class="icon-chat-empty"></i></span -->
+                          ${stars}
+                        </div>`
+    noteCard.querySelector("#btnStatus").addEventListener("click", onClickItemMenu)
+    document.body.appendChild(noteCard)
+  }
+
+  function offerHTML(offer) {
+    return `<div style="display: flex;">
+                          <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"]}</span>
+                          <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
+                        </div>
+                        <div style="display: flex">
+                          <span style="flex-grow: 1; font-size: smaller">${offer.attributes["Культура"]}</span>
+                          <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${offer.qty} кг</span>
+                        </div>
+                        <div style ="font-size: small">Дата выпуска: ${offer.attributes["Дата выпуска"]}</div>
+                        <div style="display: flex">
+                          <span style ="flex-grow: 1; font-size: small">${offer.attributes["Хлебоприемное предприятие_short"]}</span>
+                          <span style ="flex-shrink: 0; font-size: small">${offer.attributes["Зернохранилище_short"]}</span>
+                        </div>`
+  }
+
+  function onClickItemMenu(event) {
+    const offerId = event.target.getAttribute("data-id")
+    navigateOffer(offerId)
+  }
+
+  function navigateOffer(offerId) {
+    getAccountOffer(offerId).then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((offer) => {
+      if (offer.status == offerStatus.initial || offer.status == offerStatus.active)
+        displayOfferDialog(offer)
+      else {
+        //TODO
+      }
+    }).catch((error) => displayError(error))
+  }
+
+
+  function displayOfferDialog(offer) {
+    const offerDialog = document.createElement("div")
+    offerDialog.innerHTML=`
+                        <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Лот на продажу</div>
+                        ${offerHTML(offer)}
+                        <form style="display: flex; flex-direction: column;">
+                          <div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
+                            <span style="flex-grow: 1">Сумма:</span>
+                            <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price * offer.qty}</output>
+                            <span style="flex-shrink: 0">&nbspтг</span>
+                          </div>
+                          <div style="display:flex;  margin-bottom: 20px;">
+                            <span style="flex-grow: 1">Цена:</span>
+                            <input  type="number" name="price" style="flex-shrink: 0; font-size:x-large; font-family: monospace;" value="${offer.price}">
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
+                          </div>
+                          <input type="hidden" name="qty" value="${offer.qty}">
+                          <!-- div style="display:flex;  margin-bottom: 20px;">
+                            <span style="flex-grow: 1">Продавать целиком</span>
+                            <input  type="checkbox" name="sellEntire" style="flex-shrink: 0; font-size:x-large; font-family: monospace;" value="true">
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbsp</span>
+                          </div -->
+
+                          <div style="display:flex; margin-bottom: 20px;">
+                            <span style="flex-grow: 0">Минимальное Кол-во:</span>
+                            <input name="minQty" type="range" step="1000" min="1000" max="${offer.qty}" value="${offer.minQty}"
+                              oninput="this.form.minQtyText.value=this.value;"
+                              style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
+                            <output name="minQtyText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.minQty}</output>
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
+                          </div>
+
+                          <div style="display:flex; margin-bottom: 20px;">
+                            <span style="flex-grow: 0">С шагом:</span>
+                            <input name="step" type="range" min="0" max="${offer.qty}" value="${offer.step}"
+                              oninput="this.form.stepText.value=this.value;"
+                              style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
+                            <output name="stepText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.step}</output>
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
+                          </div>
+                         <button data-id="${offer.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
+                         <button data-id="${offer.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Удалить лот</button>
+                        </form>`
+    offerDialog.querySelector("#btnContinue").addEventListener("click", onClickContinue)
+    offerDialog.querySelector("#btnDelete").addEventListener("click", onClickDeleteOffer)
+    document.body.innerHTML = ""
+    document.body.appendChild(offerDialog)
+
+  }
+
+  function onClickContinue(event) {
+    const request =  {
+      id: parseInt(event.target.getAttribute("data-id")),
+      price: parseFloat(event.target.form.price.value),
+      qty: parseInt(event.target.form.qty.value),
+      minQty: parseInt(event.target.form.minQty.value),
+      step: parseInt(event.target.form.step.value),
+    }
+    changeAccountOffer(request)
+        .then((response) => {
+          if (!response.ok) throw new Error(`Response status ${response.status}`)
+          navigateOffers()
+        }).catch((error) => displayError(error))
+  }
+
+  function onClickDeleteOffer(event) {
+    const offerId = event.target.getAttribute("data-id")
+    deleteAccountOffer(offerId)
+        .then((response) => {
+          if (!response.ok) throw new Error(`Response status ${response.status}`)
+          navigateOffers()
+        })
+      .catch((error) => displayError(error))
+  }
+
+</script>
+</html>
