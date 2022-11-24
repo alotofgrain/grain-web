@@ -140,14 +140,14 @@
         `<div style="display:flex; margin-bottom: 20px;">
           <span style="flex-grow: 1">Количество:</span>
           <input name="qty" type="number" min="${offer.minQty}" max="${offer.qty}" value="${offer.qty}"
-                 onInput="this.form.sum.value=this.value*this.form.price.value;" style="flex-shrink: 0;">
+                 onInput="this.form.sum.value=this.value*this.form.price.value;" style="flex-shrink: 0; text-align: right; max-width: 10em;">
             <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
         </div>`
 
     dealDialog.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Покупка</div>
                         ${buyerOfferHTML(offer)}
-                        <form style="display: flex; flex-direction: column;">
+                        <form style="display: flex; flex-direction: column; margin-bottom: 20px;">
                           <div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
                             <span style="flex-grow: 1">Сумма:</span>
                             <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price * offer.qty}</output>
@@ -181,6 +181,7 @@
 
     if (request.qty === undefined || request.qty < 0 || request.qty > offer.qty) {
       event.target.form.qty.focus()
+      return
     }
 
     postDeal(request)

@@ -141,7 +141,7 @@
     offerDialog.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Лот на продажу</div>
                         ${offerHTML(offer)}
-                        <form style="display: flex; flex-direction: column;">
+                        <form style="display: flex; flex-direction: column; margin-top: 20px;">
                           <!-- div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
                             <span style="flex-grow: 1">Сумма:</span>
                             <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price * offer.qty}</output>
@@ -149,7 +149,7 @@
                           </div -->
                           <div style="display:flex;  margin-bottom: 20px;">
                             <span style="flex-grow: 1">Цена:</span>
-                            <input  type="number" name="price" style="flex-shrink: 0;" value="${offer.price}">
+                            <input  type="number" name="price" style="flex-shrink: 0; text-align: right; max-width: 10em;" value="${offer.price}">
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
                           </div>
                           <input type="hidden" name="qty" value="${offer.qty}">
@@ -160,7 +160,7 @@
                           </div -->
                           <div style="display:flex; margin-bottom: 20px;">
                             <span style="flex-grow: 1">Минимальное Кол-во:</span>
-                            <input name="minQty" type="number" min="1000" max="${offer.qty}" value="${offer.minQty}" style="flex-shrink: 0;">
+                            <input name="minQty" type="number" min="1000" max="${offer.qty}" value="${offer.minQty}" style="flex-shrink: 0; text-align: right; max-width: 10em;">
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
                           </div>
                          <button data-id="${offer.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
@@ -184,10 +184,12 @@
 
     if (request.price === undefined || request.price < 0 || request.price > 1000000) {
       event.target.form.price.focus()
+      return
     }
 
     if (request.minQty === undefined || request.minQty < 0 || request.minQty > request.qty) {
       event.target.form.minQty.focus()
+      return
     }
 
     changeAccountOffer(request)
