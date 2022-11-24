@@ -179,7 +179,7 @@
     }
     const offer = offers[request.offerId]
 
-    if (request.qty === undefined || request.qty < 0 || request.qty > offer.qty) {
+    if (request.qty === undefined || request.qty <= 0 || request.qty > offer.qty) {
       event.target.form.qty.focus()
       return
     }

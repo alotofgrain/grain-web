@@ -182,12 +182,12 @@
       step: 0,
     }
 
-    if (request.price === undefined || request.price < 0 || request.price > 1000000) {
+    if (request.price === undefined || request.price <= 0 || request.price > 1000000) {
       event.target.form.price.focus()
       return
     }
 
-    if (request.minQty === undefined || request.minQty < 0 || request.minQty > request.qty) {
+    if (request.minQty === undefined || request.minQty <= 0 || request.minQty > request.qty) {
       event.target.form.minQty.focus()
       return
     }
