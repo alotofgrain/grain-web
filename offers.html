@@ -68,7 +68,7 @@
 
   function displayOffers(response) {
     document.body.innerHTML = ""
-    if (response.page.count() < 1) emptyPage()
+    if (response.page.size < 1) emptyPage()
     else response.page.forEach((item) => addOfferCard(item))
   }
 
