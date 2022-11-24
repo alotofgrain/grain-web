@@ -134,19 +134,20 @@
           <span style="flex-grow: 1">Доступное количество:</span>
           <output name="availQty" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
           <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-        </div>`
+        </div>
+        <div style="display:flex; margin-bottom: 20px;">
+          <span style="flex-grow: 1">Минимальное количество:</span>
+          <output name="minQty" style="flex-shrink: 0; font-family: monospace;">${offer.minQty}</output>
+          <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
+        </div>
+        `
 
     const inputQty = (offer.minQty == offer.qty) ? `` :
-        `<div style="display:flex;">
+        `<div style="display:flex; margin-bottom: 20px;">
           <span style="flex-grow: 1">Количество:</span>
           <input name="qty" type="number" min="${offer.minQty}" max="${offer.qty}" value="${offer.qty}"
                  onInput="this.form.sum.value=this.value*this.form.price.value;" style="flex-shrink: 0; text-align: right; max-width: 10em;">
             <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-        </div>
-        <div style="display:flex; margin-bottom: 20px; font-size: small;">
-          <span style="flex-grow: 1">Минимальное количество:</span>
-          <output name="minQty" style="flex-shrink: 0; font-family: monospace;">${offer.minQty}</output>
-          <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
         </div>
         `
 
