@@ -22,6 +22,7 @@
 
       .hint {
           color: var(--tg-theme-hint-color);
+          text-align: center;
       }
 
       .link {
@@ -207,7 +208,6 @@
     document.body.innerHTML = ""
     const title = document.createElement("p")
     title.classList.add("hint")
-    title.style.textAlign = "center;"
     if (favorites) title.innerHTML = `Чтобы добавить предложения в Изрбранное нажимайте на <i class="icon-star-empty" ></i>`
     else title.textContent = `Нет подходящих предложений`
     document.body.appendChild(title)
