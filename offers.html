@@ -179,16 +179,17 @@
     }
     const offer = offers[request.offerId]
 
-    if (request.qty === undefined || request.qty <= 0 || request.qty > offer.qty) {
+    if (request.qty >= offer.minQty && request.qty <= offer.qty) {
+      postDeal(request)
+          .then((response) => {
+            if (!response.ok) throw new Error(`Response status ${response.status}`)
+            tg.close()
+          }).catch((error) => displayError(error))
+
+    } else {
       event.target.form.qty.focus()
       return
     }
-
-    postDeal(request)
-        .then((response) => {
-          if (!response.ok) throw new Error(`Response status ${response.status}`)
-          tg.close()
-        }).catch((error) => displayError(error))
   }
 
   function onClickCancel() {

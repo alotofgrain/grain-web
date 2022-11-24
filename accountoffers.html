@@ -175,12 +175,12 @@
       step: 0,
     }
 
-    if (request.price === undefined || request.price <= 0 || request.price > 1000000) {
+    if (isNaN(request.price) || request.price === undefined || request.price <= 1 || request.price > 1000000) {
       event.target.form.price.focus()
       return
     }
 
-    if (request.minQty === undefined || request.minQty <= 0 || request.minQty > request.qty) {
+    if (isNaN(request.minQty) || request.minQty === undefined || request.minQty <= 1 || request.minQty > request.qty) {
       event.target.form.minQty.focus()
       return
     }
