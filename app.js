@@ -1,3 +1,12 @@
+const statusMap = new Map()
+statusMap.set("initial", "Новый")
+statusMap.set("active", "Активный")
+statusMap.set("dealStarted", "Сделка")
+statusMap.set("dealRejected", "Отказано")
+statusMap.set("completed", "Завершено")
+statusMap.set("deleted", "Удален")
+
+
 function displayError(error) {
   document.body.innerHTML = ""
   const title = document.createElement("p")

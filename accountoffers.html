@@ -52,13 +52,6 @@
 </body>
 <script>
   const tg = window.Telegram.WebApp;
-  const statusMap = new Map()
-  statusMap.set("initial", "Новый")
-  statusMap.set("active", "Активный")
-  statusMap.set("dealStarted", "Сделка")
-  statusMap.set("dealRejected", "Отказано")
-  statusMap.set("completed", "Завершено")
-  statusMap.set("deleted", "Удален")
   tg.expand()
 
   initTgWebAppData(tg.initData)
