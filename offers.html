@@ -52,12 +52,12 @@
   initTgWebAppData(tg.initData)
   const urlParameters=new URLSearchParams(window.location.search)
   const favorites = (urlParameters.get("favorites") === "true")
-  navigateOffers(favorites)
+  navigateOffers()
 
   let offers = { }
 
   function navigateOffers() {
-    getOffers().then((response) => {
+    getOffers(favorites).then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
     }).then((response) => {
@@ -68,7 +68,8 @@
 
   function displayOffers(response) {
     document.body.innerHTML = ""
-    response.page.forEach((item) => addOfferCard(item))
+    if (response.page.count() < 1) emptyPage()
+    else response.page.forEach((item) => addOfferCard(item))
   }
 
   function starCountText(starCount) {
@@ -121,6 +122,28 @@
   function displayDealDialog(offerId) {
     const offer = offers[offerId]
     const dealDialog = document.createElement("div")
+
+    const qtyControl =  (offer.minQty == offer.qty) ?
+        `<div style="display:flex;  margin-bottom: 20px;">
+          <span style="flex-grow: 1">Количество:</span>
+          <output name="qty" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
+          <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
+        </div>`
+        :
+        `<div style="display:flex;  margin-bottom: 20px;">
+          <span style="flex-grow: 1">Доступное количество:</span>
+          <output name="availQty" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
+          <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
+        </div>`
+
+    const inputQty = (offer.minQty == offer.qty) ? `` :
+        `<div style="display:flex; margin-bottom: 20px;">
+          <span style="flex-grow: 1">Количество:</span>
+          <input name="qty" type="number" min="${offer.minQty}" max="${offer.qty}" value="${offer.qty}"
+                 onInput="this.form.sum.value=this.value*this.form.price.value;" style="flex-shrink: 0;">
+            <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
+        </div>`
+
     dealDialog.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Покупка</div>
                         ${buyerOfferHTML(offer)}
@@ -135,15 +158,8 @@
                             <output name="price" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price}</output>
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
                           </div>
-
-                          <div style="display:flex; margin-bottom: 20px;">
-                            <span style="flex-grow: 0">Количество:</span>
-                            <input name="qty" type="range" min="${offer.qty/2}" max="${offer.qty}" value="${offer.qty}"
-                              oninput="this.form.qtyText.value=this.value; this.form.sum.value=this.value*this.form.price.value;"
-                              style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
-                            <output name="qtyText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
-                            <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-                          </div>
+                          ${qtyControl}
+                          ${inputQty}
                           <div style="text-align: center; font-size: large;">
                                  <button data-id=${offer.id} id="btnConfirmBuy" type="button" style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Оформить</button>
                                  <button data-id=${offer.id} id="btnCancel"  type="button"  style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
@@ -171,6 +187,17 @@
   function onClickCancel() {
     navigateOffers()
   }
+
+  function emptyPage() {
+    document.body.innerHTML = ""
+    const title = document.createElement("p")
+    title.classList.add("hint")
+    if (favorites) title.textContent = `Добить предложения в Изрбранное нажав на ⭐`
+    else title.textContent = `Нет подходящих предложений`
+    document.body.appendChild(title)
+
+  }
+
 
 </script>
 </html>

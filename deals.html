@@ -64,7 +64,8 @@
 
   function displayOffers(response) {
     document.body.innerHTML = ""
-    response.page.forEach((item) => addOfferCard(item))
+    if (response.page.count() < 1) emptyPage()
+    else response.page.forEach((item) => addOfferCard(item))
   }
 
   function addOfferCard(item) {
@@ -77,5 +78,14 @@
                           </div>`
     document.body.appendChild(noteCard)
   }
+
+  function emptyPage() {
+    document.body.innerHTML = ""
+    const title = document.createElement("p")
+    title.classList.add("hint")
+    title.textContent = `У вас пока нет сделок.`
+    document.body.appendChild(title)
+  }
+
 </script>
 </html>

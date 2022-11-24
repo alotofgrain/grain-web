@@ -76,10 +76,10 @@
     }).catch((error) => displayError(error))
   }
 
-
   function displayOffers(response) {
     document.body.innerHTML = ""
-    response.page.forEach((item) => addOfferCard(item))
+    if (response.page.count() < 1) emptyPage()
+    else response.page.forEach((item) => addOfferCard(item))
   }
 
   function addOfferCard(item) {
@@ -158,22 +158,9 @@
                             <input  type="checkbox" name="sellEntire" style="flex-shrink: 0; font-size:x-large; font-family: monospace;" value="true">
                             <span style="flex-shrink: 0; min-width: 2em;">&nbsp</span>
                           </div -->
-
                           <div style="display:flex; margin-bottom: 20px;">
-                            <span style="flex-grow: 0">Минимальное Кол-во:</span>
-                            <input name="minQty" type="range" step="1000" min="1000" max="${offer.qty}" value="${offer.minQty}"
-                              oninput="this.form.minQtyText.value=this.value;"
-                              style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
-                            <output name="minQtyText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.minQty}</output>
-                            <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-                          </div>
-
-                          <div style="display:flex; margin-bottom: 20px;">
-                            <span style="flex-grow: 0">С шагом:</span>
-                            <input name="step" type="range" min="0" max="${offer.qty}" value="${offer.step}"
-                              oninput="this.form.stepText.value=this.value;"
-                              style="flex-grow: 1; margin-left: 1em; margin-right: 1em;">
-                            <output name="stepText" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.step}</output>
+                            <span style="flex-grow: 1">Минимальное Кол-во:</span>
+                            <input name="minQty" type="number" min="1000" max="${offer.qty}" value="${offer.minQty}" style="flex-shrink: 0;">
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
                           </div>
                          <button data-id="${offer.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
@@ -209,6 +196,14 @@
           navigateOffers()
         })
       .catch((error) => displayError(error))
+  }
+
+  function emptyPage() {
+    document.body.innerHTML = ""
+    const title = document.createElement("p")
+    title.classList.add("hint")
+    title.textContent = `У вас пока нет лотов на продажу. Чтобы добавить лот загрузите зерновую расписку в формате PDF.`
+    document.body.appendChild(title)
   }
 
 </script>
