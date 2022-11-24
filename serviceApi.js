@@ -1,8 +1,7 @@
 const apiUrl = "https://api.grainbot.danialdav.com/api/v1"
 //const apiUrl = "http://localhost:8080/api/v1"
 
-
-let tgWebAppData =(new URLSearchParams(window.location.search)).get("bottoken")
+let tgWebAppData = encodeURIComponent((new URLSearchParams(window.location.search)).get("bottoken"))
 
 function initTgWebAppData(data) {
   if (data != null && tgWebAppData != undefined)
