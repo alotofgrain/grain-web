@@ -50,8 +50,7 @@
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
-  const urlParameters=new URLSearchParams(window.location.search)
-  navigateDeals(favorites)
+  navigateDeals()
 
   function navigateDeals() {
     getDeals().then((response) => {
@@ -64,7 +63,7 @@
 
   function displayOffers(response) {
     document.body.innerHTML = ""
-    if (response.page.size < 1) emptyPage()
+    if (response.page.length < 1) emptyPage()
     else response.page.forEach((item) => addOfferCard(item))
   }
 
