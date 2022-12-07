@@ -1,0 +1,35 @@
+.dform {
+    display: flex;
+    flex-direction: column;
+}
+
+.dform-attribute {
+    display: flex;
+    margin-bottom: 0.5em;
+}
+
+.dform-wide-attribute {
+    flex-direction: column;
+}
+
+.dform-attribute-caption {
+    flex-basis: content;
+    flex-grow: 1;
+    font-size: smaller;
+    margin-bottom: 0.2em;
+}
+
+.dform-attribute-input-string {
+    flex-basis: 100%;
+}
+
+.dform-attribute-input-numeric {
+    min-width: 10em;
+    max-width: 10em;
+}
+
+.dform-attribute-input-numeric-range {
+    min-width: 4em;
+    max-width: 4em;
+    margin-left: 2em;
+}

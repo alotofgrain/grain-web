@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DForm Test</title>
+  <script src="dform.js"></script>
+  <link rel="stylesheet" href="dform.css">
+  <link rel="stylesheet" href="css/fontello-grain.css">
+
+</head>
+<body>
+  <script>
+    const schema = [{"@c": ".AttributeDescriptor$String", "name": "Культура", "nullable": false},
+      {"@c": ".AttributeDescriptor$Enum", "name": "Класс", "multi": false, "values": ["3 класс", "4 класс", "фуражная"], "nullable": false},
+      {"@c": ".AttributeDescriptor$Enum", "name": "Область", "multi": true, "values": [
+          "Абайская", "Акмолинская", "Актюбинская", "Алматинская", "Атырауская", "Восточно-Казахстанская"], "nullable": false},
+      {"@c": ".AttributeDescriptor$String", "name": "Дата выпуска", "nullable": false},
+      {"@c": ".AttributeDescriptor$String", "name": "Хлебоприемное предприятие", "nullable": false},
+      {"@c": ".AttributeDescriptor$String", "name": "Зернохранилище", "nullable": false},
+      {"@c": ".AttributeDescriptor$String", "name": "Налоги", "nullable": false},
+      {"@c": ".AttributeDescriptor$String", "name": "Год урожая", "nullable": false},
+      {"@c": ".AttributeDescriptor$Numeric", "name": "Влажность, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Numeric", "name": "Примесь сорная, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Numeric", "name": "Примесь зерновая/масличная, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Numeric", "name": "Натура", "range": {"from": 10, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Numeric", "name": "Клейковина, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Numeric", "name": "Клейковина, усл.ед.", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Numeric", "name": "Число падения, с", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Range", "name": "Белок, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
+      {"@c": ".AttributeDescriptor$Range", "name": "Стекловидность, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false}]
+    const formHtml = schemaToForm(schema)
+    document.body.innerHTML = formHtml
+  </script>
+</body>
+<script src="multi-select-dropdown.js"></script>
+</html>

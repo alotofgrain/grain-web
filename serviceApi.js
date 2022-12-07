@@ -15,8 +15,16 @@ function getAccountOffers() {
   })
 }
 
-function getAccountOffer(offerId) {
-  return fetch(`${apiUrl}/account/offers/${offerId}`, {
+function getAccountOffer(offerId, copy) {
+  const copyParam = (copy) ? "/copy" : ""
+  return fetch(`${apiUrl}/account/offers/${offerId}${copyParam}`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
+function getAccountOffersSchema() {
+  return fetch(`${apiUrl}/account/offers/schema`, {
     headers: { "X-WebAppData": tgWebAppData },
     mode: "cors"
   })
@@ -31,6 +39,77 @@ function changeAccountOffer(request) {
     mode: "cors",
     method: "PUT",
     body: JSON.stringify(request)
+  })
+}
+
+function deleteAccountOffer(offerId) {
+  return fetch(`${apiUrl}/account/offers/${offerId}`, {
+    headers: {
+      "X-WebAppData": tgWebAppData,
+    },
+    mode: "cors",
+    method: "DELETE"
+  })
+}
+
+function addAccountOffer(request) {
+  return fetch(`${apiUrl}/account/offers`, {
+    headers: {
+      "X-WebAppData": tgWebAppData,
+      "Content-Type":"application/json"
+    },
+    mode: "cors",
+    method: "POST",
+    body: JSON.stringify(request)
+  })
+}
+
+function getAccountBidsSchema() {
+  return fetch(`${apiUrl}/account/bids/schema`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
+function getAccountBid(bidId) {
+  return fetch(`${apiUrl}/account/bids/${bidId}`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
+
+function addAccountBid(request) {
+  return fetch(`${apiUrl}/account/bids`, {
+    headers: {
+      "X-WebAppData": tgWebAppData,
+      "Content-Type":"application/json"
+    },
+    mode: "cors",
+    method: "POST",
+    body: JSON.stringify(request)
+  })
+}
+
+function changeAccountBid(request) {
+  return fetch(`${apiUrl}/account/bids/${request.id}`, {
+    headers: {
+      "X-WebAppData": tgWebAppData,
+      "Content-Type":"application/json"
+    },
+    mode: "cors",
+    method: "PUT",
+    body: JSON.stringify(request)
+  })
+}
+
+function deleteAccountBid(offerId) {
+  return fetch(`${apiUrl}/account/bids/${offerId}`, {
+    headers: {
+      "X-WebAppData": tgWebAppData,
+    },
+    mode: "cors",
+    method: "DELETE"
   })
 }
 
@@ -49,15 +128,6 @@ function removeFavorite(offerId) {
     headers: {
       "X-WebAppData": tgWebAppData,
     },
-    mode: "cors",
-    method: "DELETE"
-  })
-}
-
-
-function deleteAccountOffer(offerId) {
-  return fetch(`${apiUrl}/account/offers/${offerId}`, {
-    headers: { "X-WebAppData": tgWebAppData },
     mode: "cors",
     method: "DELETE"
   })
@@ -121,3 +191,11 @@ const offerStatus = {
   completed: "completed",
   deleted: "deleted"
 }
+
+const offerStatus = {
+  initial: "initial",
+  active: "active",
+  completed: "completed",
+  deleted: "deleted"
+}
+

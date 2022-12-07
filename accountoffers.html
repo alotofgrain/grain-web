@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>Account Offers</title>
@@ -198,8 +198,7 @@
   function onClickDeleteOffer(event) {
     const offerId = event.target.getAttribute("data-id")
     deleteAccountOffer(offerId)
-        .then((response) => {
-          if (!response.ok) throw new Error(`Response status ${response.status}`)
+        .then((response) => { if (!response.ok) throw new Error(`Response status ${response.status}`)
           navigateOffers()
         })
       .catch((error) => displayError(error))
@@ -209,7 +208,8 @@
     document.body.innerHTML = ""
     const title = document.createElement("p")
     title.classList.add("hint")
-    title.textContent = `У вас пока нет лотов на продажу. Чтобы добавить лот загрузите зерновую расписку в формате PDF.`
+    title.textContent = `У вас пока нет лотов на продажу. Чтобы добавить лот загрузите зерновую расписку в формате PDF
+    или нажмите <i class="icon-plus-outline" ></i> вверху справа`
     document.body.appendChild(title)
   }
 

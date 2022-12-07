@@ -35,3 +35,4 @@ function buyerOfferHTML(offer) {
                         </div>
                         <div style = "display: flex; flex-wrap: wrap;">${additionalPropertiesHtml}</div>`
 }
+

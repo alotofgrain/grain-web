@@ -2,7 +2,12 @@
 .icon-star-empty:before { content: '\e800'; } /* '' */
 .icon-star:before { content: '\e801'; } /* '' */
 .icon-search:before { content: '\e802'; } /* '' */
+.icon-reply-outline:before { content: '\e803'; } /* '' */
 .icon-attention:before { content: '\e804'; } /* '' */
+.icon-reply:before { content: '\e805'; } /* '' */
+.icon-popup:before { content: '\e808'; } /* '' */
+.icon-plus-outline:before { content: '\e809'; } /* '' */
+.icon-trash:before { content: '\e80a'; } /* '' */
 .icon-menu:before { content: '\f0c9'; } /* '' */
 .icon-chat-empty:before { content: '\f0e6'; } /* '' */
 .icon-circle:before { content: '\f111'; } /* '' */
