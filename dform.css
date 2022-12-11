@@ -33,3 +33,9 @@
     max-width: 4em;
     margin-left: 2em;
 }
+
+.dform-attribute-input-error {
+    border-width: thin!important;
+    border-color: lightcoral!important;
+    border-style: solid!important;
+}

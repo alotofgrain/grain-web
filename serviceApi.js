@@ -1,5 +1,5 @@
-const apiUrl = "https://api.grainbot.danialdav.com/api/v1"
-//const apiUrl = "http://localhost:8080/api/v1"
+//const apiUrl = "https://api.grainbot.danialdav.com/api/v1"
+const apiUrl = "http://localhost:8080/api/v1"
 
 let tgWebAppData = encodeURIComponent((new URLSearchParams(window.location.search)).get("bottoken"))
 
@@ -16,14 +16,14 @@ function getAccountOffers() {
 }
 
 function getAccountOffer(offerId, copy) {
-  const copyParam = (copy) ? "/copy" : ""
+  const copyParam = (copy) ? "?copy=true" : ""
   return fetch(`${apiUrl}/account/offers/${offerId}${copyParam}`, {
     headers: { "X-WebAppData": tgWebAppData },
     mode: "cors"
   })
 }
 
-function getAccountOffersSchema() {
+function getAccountOfferSchema() {
   return fetch(`${apiUrl}/account/offers/schema`, {
     headers: { "X-WebAppData": tgWebAppData },
     mode: "cors"
@@ -192,7 +192,7 @@ const offerStatus = {
   deleted: "deleted"
 }
 
-const offerStatus = {
+const bidStatus = {
   initial: "initial",
   active: "active",
   completed: "completed",

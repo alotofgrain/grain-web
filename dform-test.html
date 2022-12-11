@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <title>DForm Test</title>
   <script src="dform.js"></script>
+  <script src="json.js"></script>
   <link rel="stylesheet" href="dform.css">
+  <link rel="stylesheet" href="json.css">
   <link rel="stylesheet" href="css/fontello-grain.css">
 
 </head>
@@ -27,10 +29,41 @@
       {"@c": ".AttributeDescriptor$Numeric", "name": "Клейковина, усл.ед.", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
       {"@c": ".AttributeDescriptor$Numeric", "name": "Число падения, с", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
       {"@c": ".AttributeDescriptor$Range", "name": "Белок, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false},
-      {"@c": ".AttributeDescriptor$Range", "name": "Стекловидность, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false}]
-    const formHtml = schemaToForm(schema)
-    document.body.innerHTML = formHtml
-  </script>
+      {"@c": ".AttributeDescriptor$Range", "name": "Стекловидность, %", "range": {"to": 100, "from": 0, "@class": "com.tic.grainbot.model.Range"}, "nullable": false}
+    ]
+    
+    const data = {
+      "Культура" :                 "Пшеница" ,
+      "Класс":                     "4 класс" ,
+      "Область" :                  ["Акмолинская", "Актюбинская"] ,
+      "Дата выпуска":              "01.01.2001" ,
+      "Хлебоприемное предприятие": "Хлебоприемное предприятие" ,
+      "Зернохранилище":            "Зернохранилище",
+      "Налоги":                    "Налоги",
+      "Год урожая":                "2022" ,
+      "Влажность, %":              "90" ,
+      "Белок, %":                  { from: 10, to: 40 },
+      "Стекловидность, %":         { to: 50 }
+    }
+
+    
+    const form = dForm(schema, data)
+    const element = document.createElement("div")
+    element.innerHTML = `<button id="btnGet" type="button">Get Data</button>`
+    element.querySelector("#btnGet").addEventListener("click", onClickGet)
+    form.appendChild(element)
+    document.body.appendChild(form)
+
+    function onClickGet(event) {
+      const form = document.querySelector(".dform")
+      const data = dFormData(form)
+      if (data != null) {
+        const dataHtml = jsonLib.prettyPrint(data)
+        document.body.innerHTML = `<pre><code>${dataHtml}</code></pre>`
+      }
+    }
+
+   </script>
 </body>
 <script src="multi-select-dropdown.js"></script>
 </html>

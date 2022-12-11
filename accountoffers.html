@@ -6,10 +6,12 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="serviceApi.js"></script>
   <script src="app.js"></script>
+  <script src="dform.js"></script>
   <script>
     const pageVersion = 1
   </script>
   <link rel="stylesheet" href="css/fontello-grain.css">
+  <link rel="stylesheet" href="dform.css">
   <style>
       body {
           color: var(--tg-theme-text-color);
@@ -20,16 +22,8 @@
           font-size: 18px;
       }
 
-      .grey {
-          color: grey;
-      }
-
       .hint {
           color: var(--tg-theme-hint-color);
-      }
-
-      .link {
-          color: var(--tg-theme-link-color);
       }
 
       .button {
@@ -42,10 +36,6 @@
       .button:not(:last-child) {
           margin-bottom: 20px
       }
-
-      #usercard {
-          text-align: center;
-      }
   </style>
 </head>
 <body>
@@ -53,7 +43,6 @@
 <script>
   const tg = window.Telegram.WebApp;
   tg.expand()
-
   initTgWebAppData(tg.initData)
   const urlParameters= new URLSearchParams(window.location.search)
   const offerId = urlParameters.get("id")
@@ -65,24 +54,94 @@
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
     }).then((response) => {
-      displayOffers(response)
+      const caption = pageCaption({
+          title: "Мои лоты",
+          buttons: [{
+              id: "btnAdd",
+              icon: "icon-plus-outline",
+              clickHandler: clickAddOffer
+            }]
+      })
+      document.body.innerHTML = ""
+      document.body.appendChild(caption)
+      const list = offersList(response)
+      document.body.appendChild(list)
     }).catch((error) => displayError(error))
   }
 
-  function displayOffers(response) {
-    document.body.innerHTML = ""
-    if (response.page.length < 1) emptyPage()
-    else response.page.forEach((item) => addOfferCard(item))
+  function clickAddOffer(event, copyFrom) {
+    getAccountOfferSchema().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((response) => {
+      const caption = pageCaption({title: "Новый лот"})
+      const form = dForm(response)
+      form.appendChild(addOfferButtons())
+      document.body.innerHTML = ""
+      document.body.appendChild(caption)
+      document.body.appendChild(form)
+    }).catch((error) => displayError(error))
   }
 
-  function addOfferCard(item) {
-    const noteCard = document.createElement("div")
-    if (item.status === offerStatus.deleted) noteCard.classList.add("grey")
+
+  function addOfferButtons() {
+    const element = document.createElement("div")
+    element.innerHTML = `
+    <button id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
+    <button id="btnCancel" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
+    `
+    element.querySelector("#btnContinue").addEventListener("click", clickAddOfferContinue)
+    element.querySelector("#btnCancel").addEventListener("click", clickAddOfferCancel)
+    return element
+  }
+
+  function clickAddOfferContinue(event) {
+    const form = event.target.form
+    const data = dFormData(form)
+    if (data === null) return
+
+    addAccountOffer({
+      attributes: data
+    }).then(response => {
+      if (response.ok || response.status == 400)
+        return response.json()
+      else
+        return response.text()
+            .then(value => {throw new Error(`${value} (Response status ${response.status})`)})
+    }).then(result => {
+      if (result.success) navigateOffer(result.id)
+      else if (result.errors) dFormShowErrors(form, result.errors)
+      else if (result.error) displayError(result.error)
+      else throw new Error(`(Response status ${result})`)
+    }).catch((error) => displayError(error))
+  }
+
+  function clickAddOfferCancel(event) {
+    navigateOffers()
+  }
+
+  function offersList(response) {
+    if (response.page.length < 1) return emptyList()
+    const element = document.createElement("div")
+    element.style.display = "flex"
+    element.style.flexDirection = "column"
+    response.page.forEach((item) => {
+          element.appendChild(offerCard(item))
+    })
+    return element
+  }
+
+  function offerCard(item) {
+    const element = document.createElement("div")
+    element.style.width = "100%"
+    element.style.marginBottom = "1em"
+    if (item.status === offerStatus.deleted) {
+      element.style.color = "grey"
+    }
     const disabled = (item.status===offerStatus.deleted) ? "disabled" : ""
     const stars = (item.favoriteCount === undefined || item.favoriteCount === 0) ? "" :
       `<span style="font-family: monospace"><i class="icon-star-empty"></i>${item.favoriteCount}</span>`
-    noteCard.style="margin-bottom: 20px; width: 100%;"
-    noteCard.innerHTML=`${offerHTML(item)}
+    element.innerHTML=`${offerCardHTML(item)}
                         <div style="display: flex">
                           <button data-id=${item.id} id="btnStatus" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;" ${disabled}>${statusMap.get(item.status)}</button>
                           <div style="flex-grow: 1"></div>
@@ -90,13 +149,13 @@
                           <!-- span><i class="icon-chat-empty"></i></span -->
                           ${stars}
                         </div>`
-    noteCard.querySelector("#btnStatus").addEventListener("click", onClickItemMenu)
-    document.body.appendChild(noteCard)
+    element.querySelector("#btnStatus").addEventListener("click", onClickStatus)
+    return element
   }
 
-  function offerHTML(offer) {
+  function offerCardHTML(offer) {
     return `<div style="display: flex;">
-                          <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"]}</span>
+                          <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"] || offer.id}</span>
                           <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
                         </div>
                         <div style="display: flex">
@@ -113,7 +172,7 @@
                         </div>`
   }
 
-  function onClickItemMenu(event) {
+  function onClickStatus(event) {
     const offerId = event.target.getAttribute("data-id")
     navigateOffer(offerId)
   }
@@ -124,19 +183,34 @@
       else return response.json()
     }).then((offer) => {
       if (offer.status == offerStatus.initial || offer.status == offerStatus.active)
-        displayOfferDialog(offer)
+        showOfferDialog(offer)
       else {
         //TODO
       }
     }).catch((error) => displayError(error))
   }
 
+  function showOfferDialog(offer) {
+    document.body.innerHTML = ""
+    const caption = pageCaption({
+      title: "",
+      buttons: [{
+        id: "btnCopy",
+        icon: "icon-popup",
+        clickHandler: (event => {clickAddOffer(event, offer.id)})
+      }]
+    })
+    const element = offerDialog(offer)
+    document.body.appendChild(caption)
+    document.body.appendChild(element)
+  }
 
-  function displayOfferDialog(offer) {
-    const offerDialog = document.createElement("div")
-    offerDialog.innerHTML=`
+
+  function offerDialog(offer) {
+    const element = document.createElement("div")
+    element.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Лот на продажу</div>
-                        ${offerHTML(offer)}
+                        ${offerCardHTML(offer)}
                         <form style="display: flex; flex-direction: column; margin-top: 20px;">
                           <!-- div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
                             <span style="flex-grow: 1">Сумма:</span>
@@ -162,11 +236,10 @@
                          <button data-id="${offer.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
                          <button data-id="${offer.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Удалить лот</button>
                         </form>`
-    offerDialog.querySelector("#btnContinue").addEventListener("click", onClickContinue)
-    offerDialog.querySelector("#btnDelete").addEventListener("click", onClickDeleteOffer)
-    document.body.innerHTML = ""
-    document.body.appendChild(offerDialog)
-
+    element.querySelector("#btnContinue").addEventListener("click", onClickContinue)
+    element.querySelector("#btnDelete").addEventListener("click", onClickDeleteOffer)
+    element.querySelector("form").offerAttributes = offer.attributes
+    return element
   }
 
   function onClickContinue(event) {
@@ -188,29 +261,34 @@
       return
     }
 
+
     changeAccountOffer(request)
-        .then((response) => {
-          if (!response.ok) throw new Error(`Response status ${response.status}`)
-          navigateOffers()
-        }).catch((error) => displayError(error))
+       .then((response) => {
+              if (!response.ok) throw new Error(`Response status ${response.status}`)
+              navigateOffers()
+       }).catch((error) => displayError(error))
   }
 
   function onClickDeleteOffer(event) {
     const offerId = event.target.getAttribute("data-id")
-    deleteAccountOffer(offerId)
-        .then((response) => { if (!response.ok) throw new Error(`Response status ${response.status}`)
-          navigateOffers()
-        })
-      .catch((error) => displayError(error))
+    if (offerId == null) {
+      navigateOffers()
+    } else {
+      deleteAccountOffer(offerId)
+          .then((response) => {
+            if (!response.ok) throw new Error(`Response status ${response.status}`)
+            navigateOffers()
+          })
+          .catch((error) => displayError(error))
+    }
   }
 
-  function emptyPage() {
-    document.body.innerHTML = ""
-    const title = document.createElement("p")
-    title.classList.add("hint")
-    title.textContent = `У вас пока нет лотов на продажу. Чтобы добавить лот загрузите зерновую расписку в формате PDF
+  function emptyList() {
+    const element = document.createElement("div")
+    element.classList.add("hint")
+    element.innerHTML = `У вас пока нет лотов на продажу. Чтобы добавить лот загрузите зерновую расписку в формате PDF
     или нажмите <i class="icon-plus-outline" ></i> вверху справа`
-    document.body.appendChild(title)
+    return element
   }
 
 </script>

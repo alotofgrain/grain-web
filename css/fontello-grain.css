@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'fontello-grain';
-  src: url('../font/fontello-grain.eot?82575452');
-  src: url('../font/fontello-grain.eot?82575452#iefix') format('embedded-opentype'),
-       url('../font/fontello-grain.woff2?82575452') format('woff2'),
-       url('../font/fontello-grain.woff?82575452') format('woff'),
-       url('../font/fontello-grain.ttf?82575452') format('truetype'),
-       url('../font/fontello-grain.svg?82575452#fontello-grain') format('svg');
+  src: url('../font/fontello-grain.eot?41897099');
+  src: url('../font/fontello-grain.eot?41897099#iefix') format('embedded-opentype'),
+       url('../font/fontello-grain.woff2?41897099') format('woff2'),
+       url('../font/fontello-grain.woff?41897099') format('woff'),
+       url('../font/fontello-grain.ttf?41897099') format('truetype'),
+       url('../font/fontello-grain.svg?41897099#fontello-grain') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'fontello-grain';
-    src: url('../font/fontello-grain.svg?82575452#fontello-grain') format('svg');
+    src: url('../font/fontello-grain.svg?41897099#fontello-grain') format('svg');
   }
 }
 */

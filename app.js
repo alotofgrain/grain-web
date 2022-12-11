@@ -7,6 +7,26 @@ statusMap.set("completed", "Завершено")
 statusMap.set("deleted", "Удален")
 
 
+function pageCaption(data) {
+  const element = document.createElement("div")
+  element.style.display = "flex"
+  element.style.width = "100%"
+  //element.classList.add
+  const buttonsHtml = (data.buttons === undefined) ? "" :
+      data.buttons.map(button => {
+        return `<i id="${button.id}" class="${button.icon}"  style="flex-grow: 0"></i>`
+      }).join("\n")
+  const html = `<div style="flex-grow: 1; text-align: center">${data.title}</div>${buttonsHtml}`
+  element.innerHTML = html
+  if (data.buttons !== undefined) {
+    data.buttons.forEach(button => {
+      if (button.clickHandler !== undefined)
+        element.querySelector(`#${button.id}`).addEventListener("click", button.clickHandler)
+    })
+  }
+  return element
+}
+
 function displayError(error) {
   document.body.innerHTML = ""
   const title = document.createElement("p")

@@ -1,3 +1,5 @@
+//based on https://github.com/kiosion/js-multiselect-dropdown
+
 const MultiSelectDropdown = (params) => {
   let config = {
     search: true,
@@ -129,7 +131,6 @@ const MultiSelectDropdown = (params) => {
               span.appendChild(
                 newElement('span', {
                   class: 'icon-trash',
-                  //text: 'X',
                   title: config.txtRemove,
                   onclick: (e) => {
                     span.srcElement.optionElement.dispatchEvent(new Event('click'));
