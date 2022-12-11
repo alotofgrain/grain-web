@@ -73,9 +73,18 @@
     getAccountOfferSchema().then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
-    }).then((response) => {
+    }).then(schema => {
+      if (copyFrom) {
+        return getAccountOffer(copyFrom, true).then((response) => {
+          if (!response.ok) throw new Error(`Response status ${response.status}`)
+          else return response.json().then(data => {return Promise.resolve([schema, data.attributes])})
+        })
+      } else {
+        return Promise.resolve([schema, null])
+      }
+    }).then( schemaAndData => {
       const caption = pageCaption({title: "Новый лот"})
-      const form = dForm(response)
+      const form = dForm(schemaAndData[0], schemaAndData[1])
       form.appendChild(addOfferButtons())
       document.body.innerHTML = ""
       document.body.appendChild(caption)
@@ -155,7 +164,7 @@
 
   function offerCardHTML(offer) {
     return `<div style="display: flex;">
-                          <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"] || offer.id}</span>
+                          <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"] || "#" + offer.id}</span>
                           <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
                         </div>
                         <div style="display: flex">
@@ -165,7 +174,7 @@
                         <div style ="font-size: small">Дата выпуска: ${offer.attributes["Дата выпуска"]}</div>
                         <div style="display: flex">
                           <span style ="flex-grow: 1; font-size: small">${offer.attributes["Хлебоприемное предприятие_short"]}</span>
-                          <span style ="flex-shrink: 0; font-size: small">${offer.attributes["Зернохранилище_short"]}</span>
+                          <span style ="flex-shrink: 0; font-size: small">${offer.attributes["Область"]}</span>
                         </div>
                         <div style="display: flex">
                           <span style="flex-grow: 1; font-size: x-small">${offer.attributes["Налоги"]}</span>
