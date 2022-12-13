@@ -31,17 +31,19 @@ export default function DataFrom(schema, data = undefined) {
   function rangeAttribute(descriptor, value = undefined) {
     const fromValue = (value == null || value.from == null) ? "" : value.from
     const toValue = (value == null || value.to == null) ? "" : value.to
-    const minConstraint = (descriptor.range !== undefined && descriptor.range.from !== undefined)
+    const minConstraint = (descriptor.range !== undefined && descriptor.range.from != null)
         ? `min="${descriptor.range.from}"` : ``
-    const maxConstraint = (descriptor.range !== undefined && descriptor.range.to !== undefined)
+    const maxConstraint = (descriptor.range !== undefined && descriptor.range.to != null)
         ? `max="${descriptor.range.to}"` : ``
+    const fromType = minConstraint === "" && maxConstraint !== "" ? "hidden" : "number"
+    const toType = minConstraint !== "" && maxConstraint === "" ? "hidden" : "number"
     return `
    <div class="dform-attribute">   
     <span class="dform-attribute-caption">${descriptor.name}</span>
     <input class="dform-attribute-input-numeric-range" name="${descriptor.name}_from"
-      type="number" value="${fromValue}" ${minConstraint} ${maxConstraint}>
+      type="${fromType}" value="${fromValue}" ${minConstraint} ${maxConstraint}>
     <input class="dform-attribute-input-numeric-range" name="${descriptor.name}_to"
-      type="number" value="${toValue}" ${minConstraint} ${maxConstraint}>
+      type="${toType}" value="${toValue}" ${minConstraint} ${maxConstraint}>
    </div>
   `
   }
