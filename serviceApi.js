@@ -64,7 +64,7 @@ function addAccountOffer(request) {
   })
 }
 
-function getAccountBidsSchema() {
+function getAccountBidSchema() {
   return fetch(`${apiUrl}/account/bids/schema`, {
     headers: { "X-WebAppData": tgWebAppData },
     mode: "cors"
@@ -73,6 +73,13 @@ function getAccountBidsSchema() {
 
 function getAccountBid(bidId) {
   return fetch(`${apiUrl}/account/bids/${bidId}`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
+function getAccountBids() {
+  return fetch(`${apiUrl}/account/bids`, {
     headers: { "X-WebAppData": tgWebAppData },
     mode: "cors"
   })

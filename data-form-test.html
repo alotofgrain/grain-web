@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>DForm Test</title>
-  <script src="dform.js"></script>
   <script src="json.js"></script>
-  <link rel="stylesheet" href="dform.css">
+  <link rel="stylesheet" href="data-form.css">
   <link rel="stylesheet" href="json.css">
   <link rel="stylesheet" href="css/fontello-grain.css">
 
 </head>
 <body>
-  <script>
+  <script type="module">
+    import DataForm from "./data-form.js"
     const schema = [{"@c": ".AttributeDescriptor$String", "name": "Культура", "nullable": false},
       {"@c": ".AttributeDescriptor$Enum", "name": "Класс", "multi": false, "values": ["3 класс", "4 класс", "фуражная"], "nullable": false},
       {"@c": ".AttributeDescriptor$Enum", "name": "Область", "multi": true, "values": [
@@ -47,23 +47,20 @@
     }
 
     
-    const form = dForm(schema, data)
+    const dataForm = new DataForm(schema, data)
     const element = document.createElement("div")
     element.innerHTML = `<button id="btnGet" type="button">Get Data</button>`
     element.querySelector("#btnGet").addEventListener("click", onClickGet)
-    form.appendChild(element)
-    document.body.appendChild(form)
+    dataForm.getFormElement().appendChild(element)
+    document.body.appendChild(dataForm.getFormElement())
 
     function onClickGet(event) {
-      const form = document.querySelector(".dform")
-      const data = dFormData(form)
+      const data = dataForm.getData()
       if (data != null) {
         const dataHtml = jsonLib.prettyPrint(data)
         document.body.innerHTML = `<pre><code>${dataHtml}</code></pre>`
       }
     }
-
    </script>
 </body>
-<script src="multi-select-dropdown.js"></script>
 </html>

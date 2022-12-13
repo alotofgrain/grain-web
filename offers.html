@@ -6,12 +6,11 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="serviceApi.js"></script>
   <script src="app.js"></script>
-  <script src="dform.js"></script>
   <script>
     const pageVersion = 1
   </script>
   <link rel="stylesheet" href="css/fontello-grain.css">
-  <link rel="stylesheet" href="dform.css">
+  <link rel="stylesheet" href="data-form.css">
   <style>
       body {
           color: var(--tg-theme-text-color);
@@ -49,7 +48,8 @@
 </head>
 <body>
 </body>
-<script>
+<script type="module">
+  import DataFrom from "./data-form";
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)

@@ -72,7 +72,7 @@
     noteCard.style="margin-bottom: 20px; ; width: 100%;"
     noteCard.innerHTML=`${buyerOfferHTML(item)}
                           <div style="display: flex">
-                            <span style="flex-grow: 1; font-weight: bolder;">${statusMap.get(item.status)}</span>
+                            <span style="flex-grow: 1; font-weight: bolder;">${offerStatusMap.get(item.status)}</span>
                           <!-- span style="font-family: monospace"><i class="icon-star-empty" data-id=${item.id}></i></span -->
                           </div>`
     document.body.appendChild(noteCard)

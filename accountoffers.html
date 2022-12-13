@@ -6,12 +6,11 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="serviceApi.js"></script>
   <script src="app.js"></script>
-  <script src="dform.js"></script>
   <script>
     const pageVersion = 1
   </script>
   <link rel="stylesheet" href="css/fontello-grain.css">
-  <link rel="stylesheet" href="dform.css">
+  <link rel="stylesheet" href="data-form.css">
   <style>
       body {
           color: var(--tg-theme-text-color);
@@ -39,8 +38,8 @@
   </style>
 </head>
 <body>
-</body>
-<script>
+<script type = "module">
+  import DataFrom from "./data-form.js";
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
@@ -49,14 +48,14 @@
   if (offerId == null) navigateOffers()
   else navigateOffer(offerId)
 
-  function navigateOffers() {
+  function navigateOffers(forCopy = false) {
     getAccountOffers().then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
     }).then((response) => {
       const caption = pageCaption({
-          title: "Мои лоты",
-          buttons: [{
+          title: forCopy ? "Выберите лот" : "Мои лоты",
+          buttons: forCopy ? null : [{
               id: "btnAdd",
               icon: "icon-plus-outline",
               clickHandler: clickAddOffer
@@ -64,12 +63,12 @@
       })
       document.body.innerHTML = ""
       document.body.appendChild(caption)
-      const list = offersList(response)
+      const list = offersList(response, forCopy)
       document.body.appendChild(list)
     }).catch((error) => displayError(error))
   }
 
-  function clickAddOffer(event, copyFrom) {
+  function clickAddOffer(event, copyFrom, replyOn) {
     getAccountOfferSchema().then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
@@ -86,6 +85,11 @@
       const caption = pageCaption({title: "Новый лот"})
       const form = dForm(schemaAndData[0], schemaAndData[1])
       form.appendChild(addOfferButtons())
+      const replyOnField = document.createElement("input")
+      replyOnField.name = "replyOn"
+      replyOnField.type = "hidden"
+      replyOnField.value = replyOn
+      form.appendChild(replyOnField)
       document.body.innerHTML = ""
       document.body.appendChild(caption)
       document.body.appendChild(form)
@@ -108,9 +112,10 @@
     const form = event.target.form
     const data = dFormData(form)
     if (data === null) return
-
+    const replyOn = form.querySelector(`[name="replyOn"]`)?.value
     addAccountOffer({
-      attributes: data
+      attributes: data,
+      replyOn: replyOn
     }).then(response => {
       if (response.ok || response.status == 400)
         return response.json()
@@ -129,41 +134,46 @@
     navigateOffers()
   }
 
-  function offersList(response) {
+  function offersList(response, forCopy) {
     if (response.page.length < 1) return emptyList()
     const element = document.createElement("div")
     element.style.display = "flex"
     element.style.flexDirection = "column"
     response.page.forEach((item) => {
-          element.appendChild(offerCard(item))
+          element.appendChild(offerCard(item, forCopy))
     })
     return element
   }
 
-  function offerCard(item) {
+  function offerCard(item, forCopy) {
     const element = document.createElement("div")
     element.style.width = "100%"
     element.style.marginBottom = "1em"
     if (item.status === offerStatus.deleted) {
       element.style.color = "grey"
     }
-    const disabled = (item.status===offerStatus.deleted) ? "disabled" : ""
+    const disabled = (item.status === offerStatus.deleted) ? "disabled" : ""
     const stars = (item.favoriteCount === undefined || item.favoriteCount === 0) ? "" :
       `<span style="font-family: monospace"><i class="icon-star-empty"></i>${item.favoriteCount}</span>`
+    const btnOfferCaption = forCopy ? "Копировать" : offerStatusMap.get(item.status)
     element.innerHTML=`${offerCardHTML(item)}
                         <div style="display: flex">
-                          <button data-id=${item.id} id="btnStatus" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;" ${disabled}>${statusMap.get(item.status)}</button>
+                          <button data-id=${item.id} id="btnOffer" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;" ${disabled}>${btnOfferCaption}</button>
                           <div style="flex-grow: 1"></div>
                           <!-- span style="flex-grow: 1"><i class="icon-attention"></i></span -->
                           <!-- span><i class="icon-chat-empty"></i></span -->
                           ${stars}
                         </div>`
-    element.querySelector("#btnStatus").addEventListener("click", onClickStatus)
+    const btnOfferClickHandler = forCopy ? onClickCopy : onClickStatus
+    element.querySelector("#btnOffer").addEventListener("click", btnOfferClickHandler)
+
     return element
   }
 
   function offerCardHTML(offer) {
+    const publicSymbol = offer.public ?  "" : `<i className="icon-reply-outline"></i>`
     return `<div style="display: flex;">
+                          ${publicSymbol}
                           <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"] || "#" + offer.id}</span>
                           <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
                         </div>
@@ -181,9 +191,15 @@
                         </div>`
   }
 
+
   function onClickStatus(event) {
     const offerId = event.target.getAttribute("data-id")
     navigateOffer(offerId)
+  }
+
+  function onClickCopy(event) {
+    const offerId = event.target.getAttribute("data-id")
+    clickAddOffer(event, offerId)
   }
 
   function navigateOffer(offerId) {
@@ -301,4 +317,5 @@
   }
 
 </script>
+</body>
 </html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Bids</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="serviceApi.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const pageVersion = 1
+  </script>
+  <link rel="stylesheet" href="css/fontello-grain.css">
+  <link rel="stylesheet" href="data-form.css">
+  <style>
+      body {
+          color: var(--tg-theme-text-color);
+          background: var(--tg-theme-bg-color);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-size: 18px;
+      }
+
+      .hint {
+          color: var(--tg-theme-hint-color);
+      }
+
+      .button {
+          background: var(--tg-theme-button-color);
+          color: var(--tg-theme-button-text-color);
+          border: none;
+          font-size: 18px;
+      }
+
+      .button:not(:last-child) {
+          margin-bottom: 20px
+      }
+  </style>
+</head>
+<body>
+<script type="module">
+
+  import DataForm from "./data-form.js";
+
+  const tg = window.Telegram.WebApp;
+  tg.expand()
+  initTgWebAppData(tg.initData)
+  const urlParameters= new URLSearchParams(window.location.search)
+  const bidId = urlParameters.get("id")
+  if (bidId == null) navigateBids( )
+  else navigateBid(bidId)
+
+  function navigateBids(forCopy =false) {
+    getAccountBids().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((response) => {
+      const caption = pageCaption({
+        title: forCopy ? "Выберите заявку" : "Мои заявки",
+        buttons: forCopy ? null : [{
+          id: "btnAdd",
+          icon: "icon-plus-outline",
+          clickHandler: clickAddBid
+        }]
+      })
+      document.body.innerHTML = ""
+      document.body.appendChild(caption)
+      const list = bidsList(response, forCopy)
+      document.body.appendChild(list)
+    }).catch((error) => displayError(error))
+  }
+
+  function clickAddBid(event, copyFrom) {
+    getAccountBidSchema().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then(schema => {
+      if (copyFrom) {
+        return getAccountBid(copyFrom, true).then((response) => {
+          if (!response.ok) throw new Error(`Response status ${response.status}`)
+          else return response.json().then(data => {return Promise.resolve([schema, data.attributes])})
+        })
+      } else {
+        return Promise.resolve([schema, null])
+      }
+    }).then( schemaAndData => {
+      const caption = pageCaption({title: "Новая заявка"})
+      const form = new DataForm(schemaAndData[0], schemaAndData[1])
+      form.getFormElement().appendChild(addBidButtons(form))
+      document.body.innerHTML = ""
+      document.body.appendChild(caption)
+      document.body.appendChild(form.getFormElement())
+    }).catch((error) => displayError(error))
+  }
+
+  function addBidButtons(form) {
+    const element = document.createElement("div")
+    element.innerHTML = `
+    <button id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
+    <button id="btnCancel" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
+    `
+    element.querySelector("#btnContinue").addEventListener("click", (event => { clickAddBidContinue(form) }))
+    element.querySelector("#btnCancel").addEventListener("click",  clickAddBidCancel )
+    return element
+  }
+
+  function clickAddBidContinue(form) {
+    const data = form.getData()
+    if (data === null) return
+    const replyOn = form.getFormElement().querySelector(`[name="replyOn"]`)?.value
+    addAccountBid({
+      attributes: data
+    }).then(response => {
+      if (response.ok || response.status == 400)
+        return response.json()
+      else
+        return response.text()
+            .then(value => {throw new Error(`${value} (Response status ${response.status})`)})
+    }).then(result => {
+      if (result.success) navigateBid(result.id)
+      else if (result.errors) form.showErrors(result.errors)
+      else if (result.error) displayError(result.error)
+      else throw new Error(`(Response status ${result})`)
+    }).catch((error) => displayError(error))
+  }
+
+  function clickAddBidCancel(event) {
+    navigateBids()
+  }
+
+  function bidsList(response, forCopy) {
+    if (response.page.length < 1) return emptyList()
+    const element = document.createElement("div")
+    element.style.display = "flex"
+    element.style.flexDirection = "column"
+    response.page.forEach((item) => {
+      element.appendChild(bidCard(item, forCopy))
+    })
+    return element
+  }
+
+  function bidCard(item, forCopy) {
+    const element = document.createElement("div")
+    element.style.width = "100%"
+    element.style.marginBottom = "1em"
+    if (item.status === bidStatus.deleted) {
+      element.style.color = "grey"
+    }
+    const disabled = (item.status === offerStatus.deleted) ? "disabled" : ""
+    // const stars = (item.favoriteCount === undefined || item.favoriteCount === 0) ? "" :
+    //     `<span style="font-family: monospace"><i class="icon-star-empty"></i>${item.favoriteCount}</span>`
+    const btnBidCaption = forCopy ? "Копировать" : bidStatusMap.get(item.status)
+    element.innerHTML=`${bidHTML(item)}
+                        <div style="display: flex">
+                          <button data-id=${item.id} id="btnBid" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;" ${disabled}>${btnBidCaption}</button>
+                          <div style="flex-grow: 1"></div>
+                          <!-- span style="flex-grow: 1"><i class="icon-attention"></i></span -->
+                          <!-- span><i class="icon-chat-empty"></i></span -->                          
+                        </div>`
+    const btnBidClickHandler = forCopy ? onClickCopy : onClickStatus
+    element.querySelector("#btnBid").addEventListener("click", btnBidClickHandler)
+    return element
+  }
+
+
+  function onClickStatus(event) {
+    const bidId = event.target.getAttribute("data-id")
+    navigateBid(bidId)
+  }
+
+  function onClickCopy(event) {
+    const bidId = event.target.getAttribute("data-id")
+    clickAddBid(event, bidId)
+  }
+
+  function navigateBid(bidId) {
+    getAccountBid(bidId).then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((bid) => {
+      if (bid.status == bidStatus.initial || bid.status == bidStatus.active)
+        showBidDialog(bid)
+      else {
+        //TODO
+      }
+    }).catch((error) => displayError(error))
+  }
+
+  function showBidDialog(bid) {
+    document.body.innerHTML = ""
+    const caption = pageCaption({
+      title: "",
+      buttons: [{
+        id: "btnCopy",
+        icon: "icon-popup",
+        clickHandler: (event => {clickAddBid(event, bid.id)})
+      }]
+    })
+    const element = bidDialog(bid)
+    document.body.appendChild(caption)
+    document.body.appendChild(element)
+  }
+
+  function bidDialog(bid) {
+    const element = document.createElement("div")
+    element.innerHTML=`
+                        <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Заявка на покупку</div>
+                        ${bidHTML(bid)}
+                        <form style="display: flex; flex-direction: column; margin-top: 20px;">
+                          <!-- div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
+                            <span style="flex-grow: 1">Сумма:</span>
+                            <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${bid.price * bid.qty}</output>
+                            <span style="flex-shrink: 0">&nbspтг</span>
+                          </div -->
+                          <div style="display:flex;  margin-bottom: 20px;">
+                            <span style="flex-grow: 1">Цена:</span>
+                            <input  type="number" name="price" style="flex-shrink: 0; text-align: right; max-width: 10em;" value="${bid.price}">
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
+                          </div>
+                          <div style="display:flex; margin-bottom: 20px;">
+                            <span style="flex-grow: 1">Количество:</span>
+                            <input name="qty" type="number" min="1000" max="10000000000" value="${bid.qty}" style="flex-shrink: 0; text-align: right; max-width: 10em;">
+                            <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
+                          </div>
+                         <button data-id="${bid.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
+                         <button data-id="${bid.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Удалить заявку</button>
+                        </form>`
+    element.querySelector("#btnContinue").addEventListener("click", onClickContinue)
+    element.querySelector("#btnDelete").addEventListener("click", onClickDeleteBid)
+    element.querySelector("form").bidAttributes = bid.attributes
+    return element
+  }
+
+  function onClickContinue(event) {
+    const request =  {
+      id: parseInt(event.target.getAttribute("data-id")),
+      price: parseFloat(event.target.form.price.value),
+      qty: parseInt(event.target.form.qty.value),
+      attributes: {}
+    }
+
+    if (isNaN(request.price) || request.price === undefined || request.price <= 1 || request.price > 1000000) {
+      event.target.form.price.focus()
+      return
+    }
+
+    if (isNaN(request.qty) || request.qty === undefined || request.qty <= 1) {
+      event.target.form.qty.focus()
+      return
+    }
+    
+    changeAccountBid(request)
+        .then((response) => {
+          if (!response.ok) throw new Error(`Response status ${response.status}`)
+          navigateBids()
+        }).catch((error) => displayError(error))
+  }
+
+
+  function onClickDeleteBid(event) {
+    const bidId = event.target.getAttribute("data-id")
+    if (bidId == null) {
+      navigateBids()
+    } else {
+      deleteAccountBid(bidId)
+          .then((response) => {
+            if (!response.ok) throw new Error(`Response status ${response.status}`)
+            navigateBids()
+          })
+          .catch((error) => displayError(error))
+    }
+  }
+
+  function emptyList() {
+    const element = document.createElement("div")
+    element.classList.add("hint")
+    element.innerHTML = `Здесь можно оставить заявку на покупку. Чтобы создать заявку, нажмите <i class="icon-plus-outline" ></i> вверху справа.`
+    return element
+  }
+
+</script>
+</body>
+</html>
