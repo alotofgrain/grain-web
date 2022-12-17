@@ -1,3 +1,5 @@
+const pageVersion = 1
+
 const offerStatusMap = new Map()
 offerStatusMap.set("initial", "Новый")
 offerStatusMap.set("active", "Активный")

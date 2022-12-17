@@ -3,8 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <title>Bids</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="serviceApi.js"></script>
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="css/fontello-grain.css">
+  <link rel="stylesheet" href="data-form.css">
+  <link rel="stylesheet" href="main.css">
 </head>
 <body>
+<script type = "module">
+  import {addOffer, navigateOffers} from "./accountoffers.js";
+  const tg = window.Telegram.WebApp;
+  tg.expand()
+  initTgWebAppData(tg.initData)
+  // const urlParameters=new URLSearchParams(window.location.search)
+  // const favorites = (urlParameters.get("favorites") === "true")
+  navigateBids()
 
+  function navigateBids(focusOn = null) {
+    getBids().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((result) => {
+      const caption = pageCaption({
+        title: "Открытые заявки",
+        buttons: null
+      })
+      document.body.innerHTML = ""
+      document.body.appendChild(caption)
+      const list = bidsList(result)
+      document.body.appendChild(list)
+    }).catch((error) => displayError(error))
+  }
+
+  function bidsList(response, forCopy) {
+    if (response.page.length < 1) return emptyList()
+    const element = document.createElement("div")
+    element.style.display = "flex"
+    element.style.flexDirection = "column"
+    response.page.forEach((item) => {
+      element.appendChild(bidCard(item, forCopy))
+    })
+    return element
+  }
+
+  function bidCard(item) {
+    const element = document.createElement("div")
+    element.style.width = "100%"
+    element.style.marginBottom = "1em"
+    element.innerHTML=`${bidHTML(item)}
+                        <div style="display: flex">
+                          <button data-id=${item.id} id="btnBid" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Ответить</button>
+                          <div style="flex-grow: 1"></div>
+                          <!-- span style="flex-grow: 1"><i class="icon-attention"></i></span -->
+                          <!-- span><i class="icon-chat-empty"></i></span -->
+                        </div>`
+    element.querySelector("#btnBid").addEventListener("click", btnBidClickHandler)
+    return element
+  }
+
+  function btnBidClickHandler(event) {
+    const bidId = parseInt(event.target.getAttribute("data-id"))
+    displayAnswerDialog(bidId)
+  }
+
+  function displayAnswerDialog(bidId) {
+    const element = document.createElement("div")
+    element.classList.add("hint")
+    element.innerHTML =`
+      <p>Создаем предложение на заявку #${bidId}</p>
+      <div style="text-align: center; font-size: large;">
+         <button data-id=${bidId} id="btnAddOffer" type="button" style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Заполнить вручную</button>
+         <button data-id=${bidId} id="btnCopyOffer"  type="button"  style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Копировать</button>
+      </div>
+      `
+
+    element.querySelector("#btnAddOffer").addEventListener("click",
+        (event => {addOffer( { replyOn: bidId, exitCallback: () => { navigateBids(bidId)} })})
+    )
+    element.querySelector("#btnCopyOffer").addEventListener("click",
+        (event => {navigateOffers({replyOn: bidId, exitCallback: ()=> { navigateBids(bidId)}})})
+    )
+    document.body.innerHTML = ""
+    document.body.appendChild(element)
+  }
+
+  function emptyList() {
+    const element = document.createElement("div")
+    element.classList.add("hint")
+    element.innerHTML = `Сейчас нет открытых заявок на покупку. Мы сообщим в чате, при появлении новых заявок.`
+    return element
+  }
+</script>
 </body>
 </html>

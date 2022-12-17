@@ -155,6 +155,14 @@ function getDeals() {
   })
 }
 
+function getBids() {
+  return fetch(`${apiUrl}/bids`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
+
 function postDeal(request) {
   return fetch(`${apiUrl}/deals`, {
     headers: {
