@@ -54,6 +54,7 @@ function buyerOfferHTML(offer) {
       `<span style ="flex-shrink: 0; font-size: small">${propName}:&nbsp${offer.attributes[propName]}&nbsp&nbsp</span>`
   ).join("")
   return `<div style="display: flex;">
+            ${offerIcon(offer)}
             <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Культура"]}</span>
             <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
           </div>
@@ -67,10 +68,9 @@ function buyerOfferHTML(offer) {
 function rangeText(propName, range) {
   if ((range.from == 0 && range.to == 100) || (range.from == null && range.to == null) ) return ""
   else if (range.from == range.to ) return `${propName}: ${range.from}`
-  else if (range.from > 0 && range.to < 100) return `${propName}: ${range.from} — ${range.to}`
-  else if (range.from > 0) return `${propName}: >${range.from}`
-  else if (range.to > 0) return `${propName}: <${range.to}`
-  else return "?"
+  else if (range.from != null && range.to == null) return `${propName}: >${range.from}`
+  else if (range.to != null && range.from == null) return `${propName}: <${range.to}`
+  else return `${propName}: ${range.from} — ${range.to}`
 }
 
 function bidHTML(bid) {
@@ -93,3 +93,16 @@ function bidHTML(bid) {
                         <div style = "display: flex; flex-wrap: wrap;">${additionalPropertiesHtml}</div>`
 }
 
+function matchesBriefList(bidOrOffer, isBid) {
+  return bidOrOffer.matches.map(item => {
+    const sign = item.status === "active"? "icon-reply-outline": "icon-reply"
+    const greyStyle = item.status === "active" ? "": `style="color: grey"`
+    const signStyle = isBid ? "": "transform: scaleX(-1)"
+    return `<div ${greyStyle}><span class="${sign}" style="${signStyle}"></span><span>${item.price}</span><span class="icon-cancel"></span><span>${item.qty}</span></div>`
+  }).join("\n")
+}
+
+function offerIcon(offer) {
+  return offer.public ?  "" :
+      (offer.status == "active" ? `<i class="icon-reply-outline"></i>` : `<i class="icon-reply"></i>`)
+}

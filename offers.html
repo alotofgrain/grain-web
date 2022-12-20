@@ -13,6 +13,7 @@
 <body>
 </body>
 <script type="module">
+  import {offersList} from "./offers.js";
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
@@ -20,164 +21,24 @@
   const favorites = (urlParameters.get("favorites") === "true")
   navigateOffers()
 
-  let offers = { }
-
   function navigateOffers() {
-    getOffers(favorites).then((response) => {
+    getOffers(false).then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
     }).then((response) => {
-      response.page.forEach((item) => offers[item.id] = item)
-      displayOffers(response)
+      const element = (response.page.length < 1) ? emptyList(false) :
+          offersList(response, { favorites: false, exitCallback: navigateOffers } )
+      document.body.innerHTML = ""
+      document.body.appendChild(element)
     }).catch((error) => displayError(error))
   }
 
-  function displayOffers(response) {
-    document.body.innerHTML = ""
-    if (response.page.length < 1) emptyPage()
-    else response.page.forEach((item) => addOfferCard(item))
+  function emptyList(favorites) {
+    const element = document.createElement("div")
+    element.classList.add("hint")
+    if (favorites) element.innerHTML = `Чтобы добавить предложения в Изрбранное нажимайте на <i class="icon-star-empty" ></i>`
+    else element.textContent = `Нет подходящих предложений`
+    return element
   }
-
-  function starCountText(starCount) {
-    return (starCount === undefined || starCount === 0 || isNaN(starCount)) ? "" : `${starCount}`
-  }
-
-  function addOfferCard(item) {
-    const noteCard = document.createElement("div")
-    noteCard.style="margin-bottom: 20px; ; width: 100%;"
-    const starStyle = (item.isFavorite) ? "icon-star" : "icon-star-empty"
-    noteCard.innerHTML=`${buyerOfferHTML(item)}
-                            <div style="display: flex">
-                          <button data-id=${item.id} id="btnBuy" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Купить</button>
-                          <span style="flex-grow: 1"></span>
-                          <span style="font-family: monospace"><i class=${starStyle} data-id=${item.id} id="star" ></i><span>${starCountText(item.favoriteCount)}</span></span>
-                        </div>`
-    noteCard.querySelector("#btnBuy").addEventListener("click", onClickBuy)
-    noteCard.querySelector("#star").addEventListener("click", onClickStar)
-    document.body.appendChild(noteCard)
-  }
-
-  function onClickBuy(event) {
-    const offerId = parseInt(event.target.getAttribute("data-id"))
-    displayDealDialog(offerId)
-  }
-
-  function onClickStar(event) {
-    const offerId = parseInt(event.target.getAttribute("data-id"))
-    if (event.target.classList.contains("icon-star")) {
-        removeFavorite(offerId).then((response) => {
-        if (!response.ok) throw new Error(`Response status ${response.status}`)
-        const updatedStarCount = parseInt(event.target.parentElement.children[1].innerText) - 1
-        event.target.parentElement.children[1].innerText = starCountText(updatedStarCount)
-        event.target.classList.remove("icon-star")
-        event.target.classList.add("icon-star-empty")
-      }).catch((error) => displayError(error))
-    } else {
-        putFavorite(offerId).then((response) => {
-        if (!response.ok) throw new Error(`Response status ${response.status}`)
-        let starCount = parseInt(event.target.parentElement.children[1].innerText)
-        if (starCount === undefined || isNaN(starCount)) starCount = 1
-        else starCount = starCount + 1
-        event.target.parentElement.children[1].innerText = starCountText(starCount)
-        event.target.classList.remove("icon-star-empty")
-        event.target.classList.add("icon-star")
-      }).catch((error) => displayError(error))
-    }
-  }
-
-  function displayDealDialog(offerId) {
-    const offer = offers[offerId]
-    const dealDialog = document.createElement("div")
-
-    const qtyControl =  (offer.minQty == offer.qty) ?
-        `<div style="display:flex;  margin-bottom: 20px;">
-          <span style="flex-grow: 1">Количество:</span>
-          <output name="qty" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
-          <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-        </div>`
-        :
-        `<div style="display:flex;  margin-bottom: 20px;">
-          <span style="flex-grow: 1">Доступное количество:</span>
-          <output name="availQty" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
-          <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-        </div>
-        <div style="display:flex; margin-bottom: 20px;">
-          <span style="flex-grow: 1">Минимальное количество:</span>
-          <output name="minQty" style="flex-shrink: 0; font-family: monospace;">${offer.minQty}</output>
-          <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-        </div>
-        `
-
-    const inputQty = (offer.minQty == offer.qty) ? `` :
-        `<div style="display:flex; margin-bottom: 20px;">
-          <span style="flex-grow: 1">Количество:</span>
-          <input name="qty" type="number" min="${offer.minQty}" max="${offer.qty}" value="${offer.qty}"
-                 onInput="this.form.sum.value=this.value*this.form.price.value;" style="flex-shrink: 0; text-align: right; max-width: 10em;">
-            <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
-        </div>
-        `
-
-    dealDialog.innerHTML=`
-                        <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Покупка</div>
-                        ${buyerOfferHTML(offer)}
-                        <form style="display: flex; flex-direction: column; margin-bottom: 20px;">
-                          <div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
-                            <span style="flex-grow: 1">Сумма:</span>
-                            <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price * offer.qty}</output>
-                            <span style="flex-shrink: 0">&nbspтг</span>
-                          </div>
-                          <div style="display:flex;  margin-bottom: 20px;">
-                            <span style="flex-grow: 1">Цена:</span>
-                            <output name="price" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price}</output>
-                            <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
-                          </div>
-                          ${qtyControl}
-                          ${inputQty}
-                          <div style="text-align: center; font-size: large;">
-                                 <button data-id=${offer.id} id="btnConfirmBuy" type="button" style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Оформить</button>
-                                 <button data-id=${offer.id} id="btnCancel"  type="button"  style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
-                          </div>
-                        </form>`
-
-    dealDialog.querySelector("#btnConfirmBuy").addEventListener("click", onClickConfirmBuy)
-    dealDialog.querySelector("#btnCancel").addEventListener("click", onClickCancel)
-    document.body.innerHTML = ""
-    document.body.appendChild(dealDialog)
-  }
-
-  function onClickConfirmBuy(event) {
-    const request =  {
-      offerId: parseInt(event.target.getAttribute("data-id")),
-      qty: parseInt(event.target.form.qty.value),
-    }
-    const offer = offers[request.offerId]
-
-    if (request.qty >= offer.minQty && request.qty <= offer.qty) {
-      postDeal(request)
-          .then((response) => {
-            if (!response.ok) throw new Error(`Response status ${response.status}`)
-            tg.close()
-          }).catch((error) => displayError(error))
-
-    } else {
-      event.target.form.qty.focus()
-      return
-    }
-  }
-
-  function onClickCancel() {
-    navigateOffers()
-  }
-
-  function emptyPage() {
-    const title = document.createElement("p")
-    title.classList.add("hint")
-    if (favorites) title.innerHTML = `Чтобы добавить предложения в Изрбранное нажимайте на <i class="icon-star-empty" ></i>`
-    else title.textContent = `Нет подходящих предложений`
-    document.body.innerHTML = ""
-    document.body.appendChild(title)
-  }
-
-
 </script>
 </html>

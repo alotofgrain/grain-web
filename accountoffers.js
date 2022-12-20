@@ -35,7 +35,7 @@ export function navigateOffer(offerId, addOfferArgs = {copyFrom: null, replyOn: 
 }
 
 
-export function addOffer(addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null}) {
+export function addOffer(addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null, attributes: null}) {
   getAccountOfferSchema().then((response) => {
     if (!response.ok) throw new Error(`Response status ${response.status}`)
     else return response.json()
@@ -46,7 +46,11 @@ export function addOffer(addOfferArgs = {copyFrom: null, replyOn: null, exitCall
         else return response.json().then(data => {return Promise.resolve([schema, data.attributes])})
       })
     } else {
-      return Promise.resolve([schema, null])
+      const attributesCopy = {
+        "Культура": addOfferArgs?.attributes["Культура"],
+        "Класс": addOfferArgs?.attributes["Класс"]
+      }
+      return Promise.resolve([schema, attributesCopy])
     }
   }).then( schemaAndData => {
     const caption = pageCaption({title: "Новый лот"})
@@ -112,10 +116,11 @@ function offerCard(item, addOfferArgs = {copyFrom: null, replyOn: null, exitCall
   if (item.status === offerStatus.deleted) {
     element.style.color = "grey"
   }
-  const disabled = (item.status === offerStatus.deleted) ? "disabled" : ""
+  const copyButton = addOfferArgs?.copyFrom != null || addOfferArgs?.replyOn != null
+  const disabled = (item.status === offerStatus.deleted && !copyButton) ? "disabled" : ""
   const stars = (item.favoriteCount === undefined || item.favoriteCount === 0) ? "" :
       `<span style="font-family: monospace"><i class="icon-star-empty"></i>${item.favoriteCount}</span>`
-  const btnOfferCaption = addOfferArgs?.copyFrom ? "Копировать" : offerStatusMap.get(item.status)
+  const btnOfferCaption = copyButton ? "Копировать" : offerStatusMap.get(item.status)
   element.innerHTML=`${offerCardHTML(item)}
                         <div style="display: flex">
                           <button data-id=${item.id} id="btnOffer" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;" ${disabled}>${btnOfferCaption}</button>
@@ -124,16 +129,15 @@ function offerCard(item, addOfferArgs = {copyFrom: null, replyOn: null, exitCall
                           <!-- span><i class="icon-chat-empty"></i></span -->
                           ${stars}
                         </div>`
-  const btnOfferClickHandler = (addOfferArgs?.copyFrom == null && addOfferArgs?.replyOn == null) ? onClickStatus
-      : (event => {addOffer(addOfferArgs)})
+  const newArgs = { ...addOfferArgs, copyFrom: item.id }
+  const btnOfferClickHandler = copyButton ? (event => {addOffer(newArgs)}) : onClickStatus
   element.querySelector("#btnOffer").addEventListener("click", btnOfferClickHandler)
   return element
 }
 
 function offerCardHTML(offer) {
-  const publicSymbol = offer.public ?  "" : `<i class="icon-reply-outline"></i>`
   return `<div style="display: flex;">
-                          ${publicSymbol}
+                          ${offerIcon(offer)}
                           <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"] || "#" + offer.id}</span>
                           <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
                         </div>

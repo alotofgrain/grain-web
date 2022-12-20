@@ -51,38 +51,39 @@
     const element = document.createElement("div")
     element.style.width = "100%"
     element.style.marginBottom = "1em"
+    const matchesHTML = matchesBriefList(item, false)
     element.innerHTML=`${bidHTML(item)}
+                        ${matchesHTML}
                         <div style="display: flex">
                           <button data-id=${item.id} id="btnBid" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Ответить</button>
                           <div style="flex-grow: 1"></div>
                           <!-- span style="flex-grow: 1"><i class="icon-attention"></i></span -->
                           <!-- span><i class="icon-chat-empty"></i></span -->
                         </div>`
-    element.querySelector("#btnBid").addEventListener("click", btnBidClickHandler)
+    element.querySelector("#btnBid").addEventListener("click", (event => { displayAnswerDialog(item)}))
     return element
   }
 
-  function btnBidClickHandler(event) {
-    const bidId = parseInt(event.target.getAttribute("data-id"))
-    displayAnswerDialog(bidId)
-  }
-
-  function displayAnswerDialog(bidId) {
+  function displayAnswerDialog(bid) {
     const element = document.createElement("div")
     element.classList.add("hint")
     element.innerHTML =`
-      <p>Создаем предложение на заявку #${bidId}</p>
+      <p>Создаем предложение на заявку #${bid.id}</p>
       <div style="text-align: center; font-size: large;">
-         <button data-id=${bidId} id="btnAddOffer" type="button" style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Заполнить вручную</button>
-         <button data-id=${bidId} id="btnCopyOffer"  type="button"  style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Копировать</button>
+         <button data-id=${bid.id} id="btnAddOffer" type="button" style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Заполнить вручную</button>
+         <button data-id=${bid.id} id="btnCopyOffer"  type="button"  style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Копировать</button>
       </div>
       `
 
     element.querySelector("#btnAddOffer").addEventListener("click",
-        (event => {addOffer( { replyOn: bidId, exitCallback: () => { navigateBids(bidId)} })})
+        (event => {addOffer( {
+          replyOn: bid.id,
+          exitCallback: () => { navigateBids(bid.id)},
+          attributes: bid.attributes
+        })})
     )
     element.querySelector("#btnCopyOffer").addEventListener("click",
-        (event => {navigateOffers({replyOn: bidId, exitCallback: ()=> { navigateBids(bidId)}})})
+        (event => {navigateOffers({replyOn: bid.id, exitCallback: ()=> { navigateBids(bid.id)}})})
     )
     document.body.innerHTML = ""
     document.body.appendChild(element)

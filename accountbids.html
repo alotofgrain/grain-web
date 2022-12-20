@@ -14,6 +14,7 @@
 <script type="module">
 
   import DataForm from "./data-form.js";
+  import { offersList } from "./offers.js";
 
   const tg = window.Telegram.WebApp;
   tg.expand()
@@ -23,7 +24,7 @@
   if (bidId == null) navigateBids( )
   else navigateBid(bidId)
 
-  function navigateBids(forCopy =false) {
+  function navigateBids(forCopy = false) {
     getAccountBids().then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
@@ -73,7 +74,7 @@
     <button id="btnCancel" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
     `
     element.querySelector("#btnContinue").addEventListener("click", (event => { clickAddBidContinue(form) }))
-    element.querySelector("#btnCancel").addEventListener("click",  clickAddBidCancel )
+    element.querySelector("#btnCancel").addEventListener("click",  navigateBids )
     return element
   }
 
@@ -95,10 +96,6 @@
       else if (result.error) displayError(result.error)
       else throw new Error(`(Response status ${result})`)
     }).catch((error) => displayError(error))
-  }
-
-  function clickAddBidCancel(event) {
-    navigateBids()
   }
 
   function bidsList(response, forCopy) {
@@ -123,12 +120,14 @@
     // const stars = (item.favoriteCount === undefined || item.favoriteCount === 0) ? "" :
     //     `<span style="font-family: monospace"><i class="icon-star-empty"></i>${item.favoriteCount}</span>`
     const btnBidCaption = forCopy ? "Копировать" : bidStatusMap.get(item.status)
+    const matchesHTML = matchesBriefList(item, true)
     element.innerHTML=`${bidHTML(item)}
+                        ${matchesHTML}
                         <div style="display: flex">
                           <button data-id=${item.id} id="btnBid" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;" ${disabled}>${btnBidCaption}</button>
                           <div style="flex-grow: 1"></div>
                           <!-- span style="flex-grow: 1"><i class="icon-attention"></i></span -->
-                          <!-- span><i class="icon-chat-empty"></i></span -->                          
+                          <!-- span><i class="icon-chat-empty"></i></span -->
                         </div>`
     const btnBidClickHandler = forCopy ? onClickCopy : onClickStatus
     element.querySelector("#btnBid").addEventListener("click", btnBidClickHandler)
@@ -160,7 +159,6 @@
   }
 
   function showBidDialog(bid) {
-    document.body.innerHTML = ""
     const caption = pageCaption({
       title: "",
       buttons: [{
@@ -170,16 +168,20 @@
       }]
     })
     const element = bidDialog(bid)
+    const matches = offersList( {page: bid.matches } , { favorites: false, favButton: false, exitCallback: navigateBid.bind(null, bid.id) })
+    document.body.innerHTML = ""
     document.body.appendChild(caption)
     document.body.appendChild(element)
+    document.body.appendChild(matches)
   }
 
   function bidDialog(bid) {
+    const delButtonCaption = (bid?.matches.length < 1) ? "Удалить заявку" : "Закрыть заявку"
     const element = document.createElement("div")
     element.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Заявка на покупку</div>
                         ${bidHTML(bid)}
-                        <form style="display: flex; flex-direction: column; margin-top: 20px;">
+                        <form style="display: flex; flex-direction: column; margin-top: 20px; margin-bottom: 1em;">
                           <!-- div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
                             <span style="flex-grow: 1">Сумма:</span>
                             <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${bid.price * bid.qty}</output>
@@ -196,7 +198,7 @@
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
                           </div>
                          <button data-id="${bid.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
-                         <button data-id="${bid.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Удалить заявку</button>
+                         <button data-id="${bid.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">${delButtonCaption}</button>
                         </form>`
     element.querySelector("#btnContinue").addEventListener("click", onClickContinue)
     element.querySelector("#btnDelete").addEventListener("click", onClickDeleteBid)

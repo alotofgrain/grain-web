@@ -131,7 +131,7 @@ export default function MultiSelectDropdown(params) {
               if (!config.hideX) {
                 span.appendChild(
                     newElement('span', {
-                      class: 'icon-trash',
+                      class: 'icon-cancel',
                       title: config.txtRemove,
                       onclick: (e) => {
                         span.srcElement.optionElement.dispatchEvent(new Event('click'));
