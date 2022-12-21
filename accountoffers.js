@@ -6,6 +6,7 @@ export function navigateOffers(addOfferArgs = {copyFrom: null, replyOn: null, ex
     else return response.json()
   }).then((response) => {
     const check = (addOfferArgs?.copyFrom != null || addOfferArgs?.replyOn != null)
+    if (addOfferArgs.exitCallback == null) addOfferArgs.exitCallback = navigateOffers
     const caption = pageCaption({
       title: check ? "Выберите лот" : "Мои лоты",
       buttons: check ? null : [{
@@ -26,9 +27,10 @@ export function navigateOffer(offerId, addOfferArgs = {copyFrom: null, replyOn: 
     if (!response.ok) throw new Error(`Response status ${response.status}`)
     else return response.json()
   }).then((offer) => {
-    if (offer.status === offerStatus.initial || offer.status === offerStatus.active)
-      showOfferDialog(offer, addOfferArgs || { exitCallback: () => navigateOffers()})
-    else {
+    if (offer.status === offerStatus.initial || offer.status === offerStatus.active) {
+      if (addOfferArgs.exitCallback == null) addOfferArgs.exitCallback = navigateOffers
+      showOfferDialog(offer, addOfferArgs)
+    } else {
       //TODO
     }
   }).catch((error) => displayError(error))
