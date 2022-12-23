@@ -16,7 +16,7 @@
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
-
+  const urlParameters=new URLSearchParams(window.location.search)
   const bidId = urlParameters.get("id")
   if (bidId == null) navigateBids()
   else navigateBid(bidId)
@@ -49,7 +49,7 @@
       })
       document.body.innerHTML = ""
       document.body.appendChild(caption)
-      const list = bidsList([result])
+      const list = bidsList({offset: 0, limit: 0, total: 1, page: [result]})
       document.body.appendChild(list)
     }).catch((error) => displayError(error))
   }
@@ -70,7 +70,7 @@
     element.style.width = "100%"
     element.style.marginBottom = "1em"
     const matchesHTML = matchesBriefList(item, false)
-    const btnBidCaption = item.status === "active" ? "Ответить" : bidStatusMap[item.status]
+    const btnBidCaption = item.status === "active" ? "Ответить" : bidStatusMap.get(item.status)
 
     element.innerHTML=`${bidHTML(item)}
                         ${matchesHTML}
