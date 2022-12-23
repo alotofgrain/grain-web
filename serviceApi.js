@@ -148,6 +148,13 @@ function getOffers(favorites) {
   })
 }
 
+function getOffer(offerId) {
+  return fetch(`${apiUrl}/offers/${offerId}`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
 function getDeals() {
   return fetch(`${apiUrl}/deals`, {
     headers: { "X-WebAppData": tgWebAppData },
@@ -162,6 +169,12 @@ function getBids() {
   })
 }
 
+function getBid(bidId) {
+  return fetch(`${apiUrl}/bids/${bidId}`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
 
 function postDeal(request) {
   return fetch(`${apiUrl}/deals`, {

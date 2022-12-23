@@ -16,11 +16,13 @@
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
-  // const urlParameters=new URLSearchParams(window.location.search)
-  // const favorites = (urlParameters.get("favorites") === "true")
-  navigateBids()
 
-  function navigateBids(focusOn = null) {
+  const bidId = urlParameters.get("id")
+  if (bidId == null) navigateBids()
+  else navigateBid(bidId)
+
+
+  function navigateBids() {
     getBids().then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
@@ -32,6 +34,22 @@
       document.body.innerHTML = ""
       document.body.appendChild(caption)
       const list = bidsList(result)
+      document.body.appendChild(list)
+    }).catch((error) => displayError(error))
+  }
+
+  function navigateBid(bidId) {
+    getBid(bidId).then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((result) => {
+      const caption = pageCaption({
+        title: "Заявка",
+        buttons: null
+      })
+      document.body.innerHTML = ""
+      document.body.appendChild(caption)
+      const list = bidsList([result])
       document.body.appendChild(list)
     }).catch((error) => displayError(error))
   }
@@ -52,15 +70,21 @@
     element.style.width = "100%"
     element.style.marginBottom = "1em"
     const matchesHTML = matchesBriefList(item, false)
+    const btnBidCaption = item.status === "active" ? "Ответить" : bidStatusMap[item.status]
+
     element.innerHTML=`${bidHTML(item)}
                         ${matchesHTML}
                         <div style="display: flex">
-                          <button data-id=${item.id} id="btnBid" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Ответить</button>
+                          <button data-id=${item.id} id="btnBid" style="padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">${btnBidCaption}</button>
                           <div style="flex-grow: 1"></div>
                           <!-- span style="flex-grow: 1"><i class="icon-attention"></i></span -->
                           <!-- span><i class="icon-chat-empty"></i></span -->
                         </div>`
-    element.querySelector("#btnBid").addEventListener("click", (event => { displayAnswerDialog(item)}))
+    if (item.status === "active") {
+      element.querySelector("#btnBid").addEventListener("click", (event => {
+        displayAnswerDialog(item)
+      }))
+    }
     return element
   }
 

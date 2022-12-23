@@ -13,13 +13,16 @@
 <body>
 </body>
 <script type="module">
-  import {offersList} from "./offers.js";
+  import {offersList, na, showDealDialog} from "./offers.js";
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
   const urlParameters=new URLSearchParams(window.location.search)
   const favorites = (urlParameters.get("favorites") === "true")
-  navigateOffers()
+  const offerId = urlParameters.get("id")
+  if (offerId == null) navigateOffers()
+  else navigateOffer(offerId)
+
 
   function navigateOffers() {
     getOffers(false).then((response) => {
@@ -39,6 +42,15 @@
     if (favorites) element.innerHTML = `Чтобы добавить предложения в Изрбранное нажимайте на <i class="icon-star-empty" ></i>`
     else element.textContent = `Нет подходящих предложений`
     return element
+  }
+
+  function navigateOffer(offerId) {
+    getOffer(offerId).then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((offer) => {
+      showDealDialog(offer, { favorites: false, exitCallback: navigateOffers })
+    }).catch((error) => displayError(error))
   }
 </script>
 </html>

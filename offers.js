@@ -63,7 +63,7 @@ function onClickStar(event) {
   }
 }
 
-function showDealDialog(offer, offersListArgs) {
+export function showDealDialog(offer, offersListArgs) {
   const element = document.createElement("div")
   const qtyControl =  (offer.minQty == offer.qty) ?
       `<div style="display:flex;  margin-bottom: 20px;">
@@ -93,11 +93,8 @@ function showDealDialog(offer, offersListArgs) {
         </div>
         `
 
-  element.innerHTML=`
-                        <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Покупка</div>
-                        ${buyerOfferHTML(offer)}
-                        <form style="display: flex; flex-direction: column; margin-bottom: 20px;">
-                          <div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
+  const formContent = offer.status === "active" ?
+  `                          <div style="display:flex; font-weight:bold; font-size: large;  margin-top: 30px; margin-bottom: 30px;">
                             <span style="flex-grow: 1">Сумма:</span>
                             <output name="sum" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.price * offer.qty}</output>
                             <span style="flex-shrink: 0">&nbspтг</span>
@@ -113,10 +110,26 @@ function showDealDialog(offer, offersListArgs) {
                                  <button data-id=${offer.id} id="btnConfirmBuy" type="button" style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Оформить</button>
                                  <button data-id=${offer.id} id="btnCancel"  type="button"  style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Отмена</button>
                           </div>
+` : `
+            <div style="text-align: center; font-size: large;">
+                <button data-id=${offer.id} id="btnCancel"  type="button"  style="font-size: inherit; margin: 0.5em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Закрыть</button>
+            </div>
+`
+  const grey = offer.status === "active" ? "" : "grey"
+
+  element.innerHTML=`
+                        <div class="hint ${grey}" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Покупка</div>
+                        ${buyerOfferHTML(offer)}
+                        <form style="display: flex; flex-direction: column; margin-bottom: 20px;">
+                        ${formContent}
                         </form>`
 
-  element.querySelector("#btnConfirmBuy").addEventListener("click", (event => {onClickConfirmBuy(event, offer, offersListArgs)}))
-  element.querySelector("#btnCancel").addEventListener("click", offersListArgs.exitCallback )
+    if (offer.status === "active") {
+      element.querySelector("#btnConfirmBuy").addEventListener("click", (event => {
+        onClickConfirmBuy(event, offer, offersListArgs)
+      }))
+    }
+    element.querySelector("#btnCancel").addEventListener("click", offersListArgs.exitCallback)
   document.body.innerHTML = ""
   document.body.appendChild(element)
 }

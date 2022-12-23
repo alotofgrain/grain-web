@@ -21,7 +21,7 @@
   initTgWebAppData(tg.initData)
   const urlParameters= new URLSearchParams(window.location.search)
   const bidId = urlParameters.get("id")
-  if (bidId == null) navigateBids( )
+  if (bidId == null) navigateBids()
   else navigateBid(bidId)
 
   function navigateBids(forCopy = false) {
@@ -150,11 +150,7 @@
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
     }).then((bid) => {
-      if (bid.status == bidStatus.initial || bid.status == bidStatus.active)
-        showBidDialog(bid)
-      else {
-        //TODO
-      }
+      showBidDialog(bid)
     }).catch((error) => displayError(error))
   }
 
@@ -168,7 +164,7 @@
       }]
     })
     const element = bidDialog(bid)
-    const matches = offersList( {page: bid.matches } , { favorites: false, favButton: false, exitCallback: navigateBid.bind(null, bid.id) })
+    const matches = offersList( {page: bid.matches } , { bidId: bid.id, favorites: false, favButton: false, exitCallback: navigateBid.bind(null, bid.id) })
     document.body.innerHTML = ""
     document.body.appendChild(caption)
     document.body.appendChild(element)

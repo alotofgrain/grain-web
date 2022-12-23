@@ -26,3 +26,7 @@ body {
 .button:not(:last-child) {
     margin-bottom: 20px
 }
+
+.grey {
+    color: grey;
+}

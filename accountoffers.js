@@ -27,12 +27,8 @@ export function navigateOffer(offerId, addOfferArgs = {copyFrom: null, replyOn: 
     if (!response.ok) throw new Error(`Response status ${response.status}`)
     else return response.json()
   }).then((offer) => {
-    if (offer.status === offerStatus.initial || offer.status === offerStatus.active) {
-      if (addOfferArgs.exitCallback == null) addOfferArgs.exitCallback = navigateOffers
-      showOfferDialog(offer, addOfferArgs)
-    } else {
-      //TODO
-    }
+    if (addOfferArgs.exitCallback == null) addOfferArgs.exitCallback = navigateOffers
+    showOfferDialog(offer, addOfferArgs)
   }).catch((error) => displayError(error))
 }
 
