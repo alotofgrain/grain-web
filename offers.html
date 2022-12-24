@@ -14,15 +14,19 @@
 <body>
 </body>
 <script type="module">
-  const tg = window.Telegram.WebApp;
-  tg.expand()
-  initTgWebAppData(tg.initData)
-  const urlParameters=new URLSearchParams(window.location.search)
-  const favorites = (urlParameters.get("favorites") === "true")
-  const offerId = urlParameters.get("id")
-  if (offerId == null) navigateOffers()
-  else navigateOffer(offerId)
 
+  try {
+    const tg = window.Telegram.WebApp;
+    tg.expand()
+    initTgWebAppData(tg.initData)
+    const urlParameters = new URLSearchParams(window.location.search)
+    const favorites = (urlParameters.get("favorites") === "true")
+    const offerId = urlParameters.get("id")
+    if (offerId == null) navigateOffers()
+    else navigateOffer(offerId)
+  } catch (error) {
+    displayError(error)
+  }
 
   function navigateOffers() {
     getOffers(false).then((response) => {

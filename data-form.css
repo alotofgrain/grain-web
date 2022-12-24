@@ -1,6 +1,8 @@
 .dform {
     display: flex;
     flex-direction: column;
+    color: var(--tg-theme-text-color);
+    background: var(--tg-theme-bg-color);
 }
 
 .dform-attribute {
@@ -41,11 +43,11 @@
 }
 
 :root {
-       --color-background: #ffffff;
+       --color-background: var(--tg-theme-bg-color);
        --color-border: #ced4da;
        --color-background--option: #d6dde6;
        --color-background--option--hover: #cbd5e0a1;
-       --color-text--normal: #0c0c0c;
+       --color-text--normal: var(--tg-theme-text-color);
        --color-text--grey: #24262c;
        --color-text--red: #cc6666;
        --color-text--placeholder: #ced4da;
@@ -128,7 +130,7 @@ span.placeholder {
                               }
 
 .multiselect-dropdown-search::placeholder {
-                                               color: var(--color-text--placeholder),;
+                                               color: var(--color-text--placeholder);
                                            font-size: 16px;
                                            }
 
