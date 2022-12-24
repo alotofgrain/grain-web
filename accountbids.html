@@ -14,17 +14,15 @@
   <script src="offers.js"></script>
 </head>
 <body>
-<script type="module">
+<script>
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
-  const list = emptyList()
-  document.body.appendChild(list)
 
-  // const urlParameters= new URLSearchParams(window.location.search)
-  // const bidId = urlParameters.get("id")
-  // if (bidId == null) navigateBids()
-  // else navigateBid(bidId)
+  const urlParameters= new URLSearchParams(window.location.search)
+  const bidId = urlParameters.get("id")
+  if (bidId == null) navigateBids()
+  else navigateBid(bidId)
 
   function navigateBids(forCopy = false) {
     getAccountBids().then((response) => {
