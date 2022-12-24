@@ -50,8 +50,8 @@
 
 :root {
        --color-background: var(--tg-theme-bg-color);
-       --color-border: #ced4da;
-       --color-background--option: #d6dde6;
+       --color-border: var(--tg-theme-hint-color);
+       --color-background--option: var(--tg-theme-bg-color);
        --color-background--option--hover: #cbd5e0a1;
        --color-text--normal: var(--tg-theme-text-color);
        --color-text--grey: #24262c;
