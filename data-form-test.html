@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DForm Test</title>
-  <script src="json.js"></script>
+  <title>DataForm Test</title>
   <link rel="stylesheet" href="data-form.css">
   <link rel="stylesheet" href="json.css">
   <link rel="stylesheet" href="css/fontello-grain.css">
-
+  <script src="json.js"></script>
+  <script src="multi-select-dropdown.js"></script>
+  <script src="data-form.js"></script>
 </head>
 <body>
-  <script type="module">
-    import DataForm from "./data-form.js"
+  <script>
     const schema = [{"@c": ".AttributeDescriptor$String", "name": "Культура", "nullable": false},
       {"@c": ".AttributeDescriptor$Enum", "name": "Класс", "multi": false, "values": ["3 класс", "4 класс", "фуражная"], "nullable": false},
       {"@c": ".AttributeDescriptor$Enum", "name": "Область", "multi": true, "values": [

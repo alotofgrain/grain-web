@@ -1,4 +1,4 @@
-export function offersList(response, offersListArgs = { favorites: false, exitCallback: null, favButton: true, bidId: null}) {
+function offersList(response, offersListArgs = { favorites: false, exitCallback: null, favButton: true, bidId: null}) {
   const element = document.createElement("div")
   element.style.display = "flex"
   element.style.flexDirection = "column"
@@ -63,7 +63,7 @@ function onClickStar(event) {
   }
 }
 
-export function showDealDialog(offer, offersListArgs) {
+function showDealDialog(offer, offersListArgs) {
   const element = document.createElement("div")
   const qtyControl =  (offer.minQty == offer.qty) ?
       `<div style="display:flex;  margin-bottom: 20px;">

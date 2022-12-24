@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Account Bids</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="serviceApi.js"></script>
-  <script src="app.js"></script>
   <link rel="stylesheet" href="css/fontello-grain.css">
   <link rel="stylesheet" href="data-form.css">
   <link rel="stylesheet" href="main.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="serviceApi.js"></script>
+  <script src="app.js"></script>
+  <script src="multi-select-dropdown.js"></script>
+  <script src="data-form.js"></script>
+  <script src="offers.js"></script>
 </head>
 <body>
 <script type="module">
-
-  import DataForm from "./data-form.js";
-  import { offersList } from "./offers.js";
-
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)

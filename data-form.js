@@ -1,6 +1,4 @@
-import MultiSelectDropdown from "./multi-select-dropdown.js"
-
-export default function DataFrom(schema, data = undefined) {
+function DataForm(schema, data = undefined) {
 
   function stringAttribute(descriptor, value = undefined) {
     return `

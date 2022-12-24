@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Bids</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="serviceApi.js"></script>
-  <script src="app.js"></script>
   <link rel="stylesheet" href="css/fontello-grain.css">
   <link rel="stylesheet" href="data-form.css">
   <link rel="stylesheet" href="main.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="serviceApi.js"></script>
+  <script src="app.js"></script>
+  <script src="multi-select-dropdown.js"></script>
+  <script src="data-form.js"></script>
+  <script src="accountoffers.js"></script>
 </head>
 <body>
 <script type = "module">
-  //import {addOffer, navigateOffers} from "./accountoffers.js";
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
@@ -20,7 +22,6 @@
   const bidId = urlParameters.get("id")
   if (bidId == null) navigateBids()
   else navigateBid(bidId)
-
 
   function navigateBids() {
     getBids().then((response) => {

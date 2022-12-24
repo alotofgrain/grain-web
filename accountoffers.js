@@ -1,6 +1,4 @@
-import DataForm from "./data-form.js";
-
-export function navigateOffers(addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null}) {
+function navigateOffers(addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null}) {
   getAccountOffers().then((response) => {
     if (!response.ok) throw new Error(`Response status ${response.status}`)
     else return response.json()
@@ -22,7 +20,7 @@ export function navigateOffers(addOfferArgs = {copyFrom: null, replyOn: null, ex
   }).catch((error) => displayError(error))
 }
 
-export function navigateOffer(offerId, addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null}) {
+function navigateOffer(offerId, addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null}) {
   getAccountOffer(offerId).then((response) => {
     if (!response.ok) throw new Error(`Response status ${response.status}`)
     else return response.json()
@@ -33,7 +31,7 @@ export function navigateOffer(offerId, addOfferArgs = {copyFrom: null, replyOn: 
 }
 
 
-export function addOffer(addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null, attributes: null}) {
+function addOffer(addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: null, attributes: null}) {
   getAccountOfferSchema().then((response) => {
     if (!response.ok) throw new Error(`Response status ${response.status}`)
     else return response.json()

@@ -1,6 +1,6 @@
 //based on https://github.com/kiosion/js-multiselect-dropdown
 
-export default function MultiSelectDropdown(params) {
+function MultiSelectDropdown(params) {
   let config = {
     search: true,
     hideX: false,
