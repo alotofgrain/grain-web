@@ -18,7 +18,9 @@
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
-  emptyList()
+  const list = emptyList()
+  document.body.appendChild(list)
+
   // const urlParameters= new URLSearchParams(window.location.search)
   // const bidId = urlParameters.get("id")
   // if (bidId == null) navigateBids()
