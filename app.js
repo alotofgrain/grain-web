@@ -78,7 +78,8 @@ function bidHTML(bid) {
   const additionalPropertiesHtml = additionalProperties.map( (propName) =>
       `<span style ="flex-shrink: 0; font-size: small">${rangeText(propName, bid.attributes[propName])}&nbsp&nbsp</span>`
   ).join("")
-  return `<div style="display: flex;">
+  const grey = (bid.status === "active" || bid.status === "initial") ? "" : "grey"
+  return `<div style="display: flex;" class="${grey}">
                           <span style="flex-grow: 1; font-weight: bold">${"#" + bid.id}</span>
                           <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${bid.price} тг</span>
                         </div>

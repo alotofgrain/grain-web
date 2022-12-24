@@ -132,7 +132,8 @@ function offerCard(item, addOfferArgs = {copyFrom: null, replyOn: null, exitCall
 }
 
 function offerCardHTML(offer) {
-  return `<div style="display: flex;">
+  const grey = (offer.status === "active" || offer.status === "initial") ? "" : "grey"
+  return `<div style="display: flex;" class="${grey}">
                           ${offerIcon(offer)}
                           <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Номер ЗР"] || "#" + offer.id}</span>
                           <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
@@ -174,6 +175,8 @@ function showOfferDialog(offer, addOfferArgs = {copyFrom: null, replyOn: null, e
 
 function offerDialog(offer, addOfferArgs) {
   const element = document.createElement("div")
+  const readonly = (offer.status !== "active" && offer.status !== "initial") ? "readonly" : ""
+  const btnDelete = (offer.status !== "active" && offer.status !== "initial") ? "" : `<button data-id="${offer.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; border-radius:1em;">Удалить лот</button>`
   element.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Лот на продажу</div>
                         ${offerCardHTML(offer)}
@@ -185,7 +188,7 @@ function offerDialog(offer, addOfferArgs) {
                           </div -->
                           <div style="display:flex;  margin-bottom: 20px;">
                             <span style="flex-grow: 1">Цена:</span>
-                            <input  type="number" name="price" style="flex-shrink: 0; text-align: right; max-width: 10em;" value="${offer.price}">
+                            <input  type="number" name="price" style="flex-shrink: 0; text-align: right; max-width: 10em;" value="${offer.price}" ${readonly}>
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
                           </div>
                           <input type="hidden" name="qty" value="${offer.qty}">
@@ -196,15 +199,26 @@ function offerDialog(offer, addOfferArgs) {
                           </div -->
                           <div style="display:flex; margin-bottom: 20px;">
                             <span style="flex-grow: 1">Минимальное Кол-во:</span>
-                            <input name="minQty" type="number" min="1000" max="${offer.qty}" value="${offer.minQty}" style="flex-shrink: 0; text-align: right; max-width: 10em;">
+                            <input name="minQty" type="number" min="1000" max="${offer.qty}" value="${offer.minQty}" style="flex-shrink: 0; text-align: right; max-width: 10em;" ${readonly}>
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
                           </div>
                          <button data-id="${offer.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
-                         <button data-id="${offer.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; border-radius:1em;">Удалить лот</button>
+                         ${btnDelete}
                         </form>`
-  element.querySelector("#btnContinue").addEventListener("click", (event => { onClickContinue(event, addOfferArgs) }))
-  element.querySelector("#btnDelete").addEventListener("click", (event => { onClickDeleteOffer(event, addOfferArgs) }))
-  element.querySelector("form").offerAttributes = offer.attributes
+
+  if (offer.status === "active" || offer.status === "initial") {
+    element.querySelector("#btnContinue").addEventListener("click", (event => {
+      onClickContinue(event, addOfferArgs)
+    }))
+    element.querySelector("#btnDelete").addEventListener("click", (event => {
+      onClickDeleteOffer(event, addOfferArgs)
+    }))
+  } else {
+    element.querySelector("#btnContinue").addEventListener("click", (event => {
+      addOfferArgs.exitCallback()
+    }))
+  }
+
   return element
 }
 

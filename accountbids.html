@@ -174,6 +174,9 @@
   function bidDialog(bid) {
     const delButtonCaption = (bid?.matches.length < 1) ? "Удалить заявку" : "Закрыть заявку"
     const element = document.createElement("div")
+    const readonly = (bid.status !== "active" && bid.status !== "initial") ? "readonly" : ""
+    const btnDelete = (bid.status !== "active" && bid.status !== "initial") ? "" :
+        `<button data-id="${bid.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">${delButtonCaption}</button>`
     element.innerHTML=`
                         <div class="hint" style ="font-size: x-large; text-align: center; margin-bottom: 20px;  ">Заявка на покупку</div>
                         ${bidHTML(bid)}
@@ -185,20 +188,27 @@
                           </div -->
                           <div style="display:flex;  margin-bottom: 20px;">
                             <span style="flex-grow: 1">Цена:</span>
-                            <input  type="number" name="price" style="flex-shrink: 0; text-align: right; max-width: 10em;" value="${bid.price}">
+                            <input  type="number" name="price" style="flex-shrink: 0; text-align: right; max-width: 10em;" value="${bid.price}" ${readonly}>
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspтг</span>
                           </div>
                           <div style="display:flex; margin-bottom: 20px;">
                             <span style="flex-grow: 1">Количество:</span>
-                            <input name="qty" type="number" min="1000" max="10000000000" value="${bid.qty}" style="flex-shrink: 0; text-align: right; max-width: 10em;">
+                            <input name="qty" type="number" min="1000" max="10000000000" value="${bid.qty}" style="flex-shrink: 0; text-align: right; max-width: 10em;" ${readonly}>
                             <span style="flex-shrink: 0; min-width: 2em;">&nbspкг</span>
                           </div>
                          <button data-id="${bid.id}" id="btnContinue" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">Продолжить</button>
-                         <button data-id="${bid.id}" id="btnDelete" type="button" style="flex-grow: 0; font-size: large; margin: 0.5em 4em; padding-left: 1em; padding-right: 1em; flex-grow: 0; border-radius:1em;">${delButtonCaption}</button>
+                         ${btnDelete}
                         </form>`
-    element.querySelector("#btnContinue").addEventListener("click", onClickContinue)
-    element.querySelector("#btnDelete").addEventListener("click", onClickDeleteBid)
-    element.querySelector("form").bidAttributes = bid.attributes
+
+    if (bid.status === "active" || bid.status === "initial") {
+      element.querySelector("#btnContinue").addEventListener("click", onClickContinue)
+      element.querySelector("#btnDelete").addEventListener("click", onClickDeleteBid)
+    } else {
+      element.querySelector("#btnContinue").addEventListener("click", (event => {
+        navigateBids()
+      }))
+    }
+
     return element
   }
 

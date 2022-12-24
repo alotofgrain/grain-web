@@ -1,8 +1,6 @@
 .dform {
     display: flex;
     flex-direction: column;
-    color: var(--tg-theme-text-color);
-    background: var(--tg-theme-bg-color);
 }
 
 .dform-attribute {
@@ -23,23 +21,17 @@
 
 .dform-attribute-input-string {
     flex-basis: 100%;
-    color: var(--tg-theme-text-color);
-    background: var(--tg-theme-bg-color);
 }
 
 .dform-attribute-input-numeric {
     min-width: 10em;
     max-width: 10em;
-    color: var(--tg-theme-text-color);
-    background: var(--tg-theme-bg-color);
 }
 
 .dform-attribute-input-numeric-range {
     min-width: 4em;
     max-width: 4em;
     margin-left: 2em;
-    color: var(--tg-theme-text-color);
-    background: var(--tg-theme-bg-color);
 }
 
 .dform-attribute-input-error {
@@ -49,11 +41,11 @@
 }
 
 :root {
-       --color-background: var(--tg-theme-bg-color);
-       --color-border: var(--tg-theme-hint-color);
-       --color-background--option: var(--tg-theme-bg-color);
+       --color-background: #ffffff;
+       --color-border: #ced4da;
+       --color-background--option: #d6dde6;
        --color-background--option--hover: #cbd5e0a1;
-       --color-text--normal: var(--tg-theme-text-color);
+       --color-text--normal: #0c0c0c;
        --color-text--grey: #24262c;
        --color-text--red: #cc6666;
        --color-text--placeholder: #ced4da;
@@ -89,6 +81,7 @@ span.optext, span.placeholder {
 
 span.optext {
      background-color: var(--color-background--option);
+    color: var(--color-text--normal);
      padding: 0 0 2px 6px;
      cursor: default;
      -webkit-user-select: none;
@@ -165,14 +158,15 @@ span.placeholder {
 }
 
 .multiselect-dropdown-list div {
-                                    display: flex;
-                                align-items: center;
-                                justify-content: flex-start;
-                                column-gap: 6px;
-                                padding: 6px;
-                                margin: 6px 8px 6px 6px;
-                                transition: 100ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
-                                }
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: 6px;
+    padding: 6px;
+    margin: 6px 8px 6px 6px;
+    transition: 100ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    color: var(--color-text--normal);
+}
 
 .multiselect-dropdown-list div:hover {
                                       background-color: var(--color-background--option--hover);
