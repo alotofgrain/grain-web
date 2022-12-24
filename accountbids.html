@@ -18,10 +18,11 @@
   const tg = window.Telegram.WebApp;
   tg.expand()
   initTgWebAppData(tg.initData)
-  const urlParameters= new URLSearchParams(window.location.search)
-  const bidId = urlParameters.get("id")
-  if (bidId == null) navigateBids()
-  else navigateBid(bidId)
+  emptyList()
+  // const urlParameters= new URLSearchParams(window.location.search)
+  // const bidId = urlParameters.get("id")
+  // if (bidId == null) navigateBids()
+  // else navigateBid(bidId)
 
   function navigateBids(forCopy = false) {
     getAccountBids().then((response) => {
