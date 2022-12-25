@@ -43,8 +43,8 @@ function addOffer(addOfferArgs = {copyFrom: null, replyOn: null, exitCallback: n
       })
     } else {
       const attributesCopy = {
-        "Культура": addOfferArgs?.attributes["Культура"],
-        "Класс": addOfferArgs?.attributes["Класс"]
+        "Культура": addOfferArgs?.attributes?.["Культура"],
+        "Класс": addOfferArgs?.attributes?.["Класс"]
       }
       return Promise.resolve([schema, attributesCopy])
     }
