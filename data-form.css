@@ -35,7 +35,7 @@
 }
 
 .dform-attribute-input-error {
-    border-width: thin!important;
+    border-width: thick!important;
     border-color: lightcoral!important;
     border-style: solid!important;
 }
