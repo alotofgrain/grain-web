@@ -104,8 +104,8 @@ function DataForm(schema, data = undefined) {
   function extractNumericValue(descriptor, form, validate) {
     const cv = extractControlValue(descriptor.name, form)
     const value = parseFloat(cv.value)
-    const leftBound = descriptor.range.from == null || (descriptor.range.from <= value)
-    const rightBound = descriptor.range.to == null || (descriptor.range.to >= value)
+    const leftBound = value == null || descriptor.range.from == null || (descriptor.range.from <= value)
+    const rightBound = value == null || descriptor.range.to == null || (descriptor.range.to >= value)
     const result = {
       success: checkNullable(descriptor, cv.value) && leftBound && rightBound,
       value: value
@@ -157,11 +157,14 @@ function DataForm(schema, data = undefined) {
     const cvTo = extractControlValue(descriptor.name + "_to", form)
     const from = parseFloat(cvFrom.value)
     const to = parseFloat(cvTo.value)
-    const leftBound = descriptor.range.from == null || (descriptor.range.from <= from)
-    const rightBound = descriptor.range.to == null || (descriptor.range.to >= to)
+    const leftBound = cvFrom === "" ||descriptor.range.from == null || (descriptor.range.from <= from)
+    const rightBound = cvTo === "" ||descriptor.range.to == null || (descriptor.range.to >= to)
+    const value = {}
+    if (from) value.from = from
+    if (to) value.to = to
     const result = {
       success: checkNullable(descriptor, cvFrom.value + cvTo.value) && leftBound && rightBound,
-      value: {from: from, to: to}
+      value: value
     }
     if (!leftBound && validate) {
       cvFrom.control.classList.add("dform-attribute-input-error")
