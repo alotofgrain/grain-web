@@ -66,7 +66,8 @@ function buyerOfferHTML(offer) {
 }
 
 function rangeText(propName, range) {
-  if ((range.from == 0 && range.to == 100) || (range.from == null && range.to == null) ) return ""
+
+  if (range == null || (range.from == 0 && range.to == 100) || (range.from == null && range.to == null) ) return ""
   else if (range.from == range.to ) return `${propName}: ${range.from}`
   else if (range.from != null && range.to == null) return `${propName}: >${range.from}`
   else if (range.to != null && range.from == null) return `${propName}: <${range.to}`

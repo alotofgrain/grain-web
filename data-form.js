@@ -157,8 +157,8 @@ function DataForm(schema, data = undefined) {
     const cvTo = extractControlValue(descriptor.name + "_to", form)
     const from = parseFloat(cvFrom.value)
     const to = parseFloat(cvTo.value)
-    const leftBound = cvFrom === "" ||descriptor.range.from == null || (descriptor.range.from <= from)
-    const rightBound = cvTo === "" ||descriptor.range.to == null || (descriptor.range.to >= to)
+    const leftBound = cvFrom.value === "" || descriptor.range.from == null || (descriptor.range.from <= from)
+    const rightBound = cvTo.value === "" || descriptor.range.to == null || (descriptor.range.to >= to)
     const value = {}
     if (from) value.from = from
     if (to) value.to = to
