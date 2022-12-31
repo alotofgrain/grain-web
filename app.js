@@ -47,14 +47,20 @@ function displayError(error) {
   document.body.appendChild(errorLabel)
 }
 
-function buyerOfferHTML(offer) {
+function buyerOfferHTML(offer, withSelection = false, withCre = false) {
   const additionalProperties =["Год урожая", "Влажность, %", "Примесь сорная, %", "Примесь зерновая/масличная, %",
     "Натура", "Клейковина, %",  "Клейковина, усл.ед.", "Число падения, с", "Белок, %", "Стекловидность, %"]
   const additionalPropertiesHtml = additionalProperties.map( (propName) =>
       `<span style ="flex-shrink: 0; font-size: small">${propName}:&nbsp${offer.attributes[propName]}&nbsp&nbsp</span>`
   ).join("")
+  const checkBox = !withSelection ? ``: `<input type="checkbox" data-id="${offer.id}">`
+  //const creColor = (withCre && offer.cre < yesturday) ? `color: lightcoral;` : ``
+  const creColor = ``
+  const creStr = !withCre ? `` : `<div style = "display: flex; flex-wrap: wrap; ${creColor}">${(new Date(offer.cre)).toLocaleDateString()}</div>`
   return `<div style="display: flex;">
+            ${checkBox}
             ${offerIcon(offer)}
+            <span style="flex-grow: 0; font-weight: bold">#${offer.id}&nbsp&nbsp</span>
             <span style="flex-grow: 1; font-weight: bold">${offer.attributes["Культура"]}</span>
             <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
           </div>
@@ -62,7 +68,9 @@ function buyerOfferHTML(offer) {
             <span style="flex-grow: 1;">${offer.attributes["Класс"]}</span>
             <span style="flex-shrink: 0; font-size: smaller; font-family: monospace; font-weight: bolder">${offer.qty} кг</span>
           </div>
-          <div style = "display: flex; flex-wrap: wrap;">${additionalPropertiesHtml}</div>`
+          <div style = "display: flex; flex-wrap: wrap;">${additionalPropertiesHtml}</div>
+          ${creStr}
+       `
 }
 
 function rangeText(propName, range) {

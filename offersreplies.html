@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Offers</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="css/fontello-grain.css">
+  <link rel="stylesheet" href="data-form.css">
+  <link rel="stylesheet" href="main.css">
+  <script src="serviceApi.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+</body>
+<script>
+  try {
+    const tg = window.Telegram.WebApp;
+    tg.expand()
+    initTgWebAppData(tg.initData)
+    navigateOffers()
+  } catch (error) {
+    displayError(error)
+  }
+
+  function navigateOffers() {
+    getOffersReplies().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      else return response.json()
+    }).then((response) => {
+
+      const caption = pageCaption({
+        title: "Предложения по заявкам",
+        buttons: [{
+          id: "btnRelease",
+          icon: "icon-circle",
+          clickHandler: btnReleaseClick
+        }]
+      })
+
+      const element = (response.page.length < 1) ? emptyList() : offersList(response)
+      document.body.innerHTML = ""
+      document.body.appendChild(caption)
+      document.body.appendChild(element)
+    }).catch((error) => displayError(error))
+  }
+
+  function emptyList() {
+    const element = document.createElement("div")
+    element.classList.add("hint")
+    element.innerHTML = `Открытых предложений по заявкам нет`
+    return element
+  }
+
+  function btnReleaseClick() {
+    const checkboxes = Array.from(document.body.querySelectorAll("input[type='checkbox']")).filter(e => e.checked)
+    const request = { offerIds: checkboxes.map(e => e.getAttribute("data-id")) }
+    releaseOfferMatches(request).then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+    }).then(() => {
+      tg.close()
+    }).catch((error) => displayError(error))
+  }
+
+  function offersList(response) {
+    const element = document.createElement("div")
+    element.style.display = "flex"
+    element.style.flexDirection = "column"
+    response.page.forEach((item) => {
+      element.appendChild(offerCard(item))
+    })
+    return element
+  }
+
+  function offerCard(offer) {
+    const element = document.createElement("div")
+    element.style.marginBottom="20px"
+    element.style.widt="100%"
+    element.innerHTML=`${buyerOfferHTML(offer, true, true)}
+                          <div style="display: flex">
+                          <span style="flex-grow: 1"></span>
+                        </div>`
+    return element
+  }
+</script>
+</html>

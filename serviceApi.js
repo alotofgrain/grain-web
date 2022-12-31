@@ -189,6 +189,25 @@ function postDeal(request) {
   })
 }
 
+function getOffersReplies() {
+  return fetch(`${apiUrl}/offers/replies`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
+function releaseOfferMatches(request) {
+  return fetch(`${apiUrl}/offers/matches/release`, {
+    headers: {
+      "X-WebAppData": tgWebAppData,
+      "Content-Type":"application/json"
+    },
+    mode: "cors",
+    method: "PATCH",
+    body: JSON.stringify(request)
+  })
+}
+
 function getUsers() {
   return fetch(`${apiUrl}/users`, {
     headers: { "X-WebAppData": tgWebAppData },

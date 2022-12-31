@@ -14,7 +14,8 @@ function starCountText(starCount) {
 
 function offerCard(offer, offersListArgs = { favorites: false, exitCallback: null, favButton: true, bidId: null}) {
   const element = document.createElement("div")
-  element.style="margin-bottom: 20px; ; width: 100%;"
+  element.style.marginBottom="20px"
+  element.style.widt="100%"
   const starStyle = (offer.isFavorite) ? "icon-star" : "icon-star-empty"
   const favButtonHTML = !offersListArgs.favButton ? "" :
       `<span style="font-family: monospace">
@@ -29,7 +30,6 @@ function offerCard(offer, offersListArgs = { favorites: false, exitCallback: nul
                           <span style="flex-grow: 1"></span>
                           ${favButtonHTML}
                         </div>`
-
   if (offer.status === "active") {
     element.querySelector("#btnOffer").addEventListener("click", (event => {
       showDealDialog(offer, offersListArgs)
@@ -65,7 +65,7 @@ function onClickStar(event) {
 
 function showDealDialog(offer, offersListArgs) {
   const element = document.createElement("div")
-  const qtyControl =  (offer.minQty == offer.qty) ?
+  const qtyControl =  (offer.minQty === offer.qty) ?
       `<div style="display:flex;  margin-bottom: 20px;">
           <span style="flex-grow: 1">Количество:</span>
           <output name="qty" style="flex-shrink: 0; font-size:x-large; font-family: monospace;">${offer.qty}</output>
@@ -84,7 +84,7 @@ function showDealDialog(offer, offersListArgs) {
         </div>
         `
 
-  const inputQty = (offer.minQty == offer.qty) ? `` :
+  const inputQty = (offer.minQty === offer.qty) ? `` :
       `<div style="display:flex; margin-bottom: 20px;">
           <span style="flex-grow: 1">Количество:</span>
           <input name="qty" type="number" min="${offer.minQty}" max="${offer.qty}" value="${offer.qty}"
