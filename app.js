@@ -58,9 +58,11 @@ function buyerOfferHTML(offer, withSelection = false, withCre = false) {
   const creColor = ``
   const creStr = !withCre ? `` : `<div style = "display: flex; flex-wrap: wrap; ${creColor}">${(new Date(offer.cre)).toLocaleDateString()}</div>`
   return `<div style="display: flex;">
+            <span style="flex-grow: 1; font-weight: bold">
             ${checkBox}
-            ${offerIcon(offer)}            
-            <span style="flex-grow: 1; font-weight: bold">#${offer.id}&nbsp&nbsp${offer.attributes["Культура"]}</span>
+            ${offerIcon(offer)}                        
+            #${offer.id}&nbsp&nbsp${offer.attributes["Культура"]}
+            </span>
             <span style="flex-shrink: 0;font-family: monospace; font-weight: bolder">${offer.price} тг</span>
           </div>
           <div style="display: flex">
