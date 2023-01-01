@@ -104,6 +104,7 @@
     const element = document.createElement("div")
     element.style.display = "flex"
     element.style.flexDirection = "column"
+    element.style.width = "100%"
     response.page.forEach((item) => {
       element.appendChild(bidCard(item, forCopy))
     })

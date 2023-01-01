@@ -99,6 +99,7 @@ function offersList(response, addOfferArgs = {copyFrom: null, replyOn: null, exi
   const element = document.createElement("div")
   element.style.display = "flex"
   element.style.flexDirection = "column"
+  element.style.width = "100%"
   response.page.forEach((item) => {
     element.appendChild(offerCard(item, addOfferArgs))
   })
