@@ -1,6 +1,6 @@
 //const apiUrl = "http://localhost:8080/api/v1"
-//const apiUrl = "https://api.grainbot.danialdav.com/api/v1"
-const apiUrl = "https://api.betagrain.danialdav.com/api/v1"
+const apiUrl = "https://api.grainbot.danialdav.com/api/v1"
+//const apiUrl = "https://api.betagrain.danialdav.com/api/v1"
 
 let tgWebAppData = encodeURIComponent((new URLSearchParams(window.location.search)).get("bottoken"))
 
