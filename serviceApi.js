@@ -149,6 +149,14 @@ function getOffers(favorites) {
   })
 }
 
+function getOffersFile() {
+  if (favorites === undefined) favorites=false
+  return fetch(`${apiUrl}/offers/export`, {
+    headers: { "X-WebAppData": tgWebAppData },
+    mode: "cors"
+  })
+}
+
 function getOffer(offerId) {
   return fetch(`${apiUrl}/offers/${offerId}`, {
     headers: { "X-WebAppData": tgWebAppData },

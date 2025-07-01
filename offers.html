@@ -21,6 +21,7 @@
     initTgWebAppData(tg.initData)
     const urlParameters = new URLSearchParams(window.location.search)
     const favorites = (urlParameters.get("favorites") === "true")
+    const isAdmin = (urlParameters.get("isAdmin") === "true")
     const offerId = urlParameters.get("id")
     if (offerId == null) navigateOffers()
     else navigateOffer(offerId)
@@ -28,14 +29,23 @@
     displayError(error)
   }
 
-  function navigateOffers() {
+  function navigateOffers(isAdmin) {
     getOffers(false).then((response) => {
       if (!response.ok) throw new Error(`Response status ${response.status}`)
       else return response.json()
     }).then((response) => {
+      document.body.innerHTML = ""
+      const caption = pageCaption({
+        title: "Предложения",
+        buttons: isAdmin == false ? null : [{
+          id: "btnExport",
+          icon: "icon-menu",
+          clickHandler: (event => { exportOffers() })
+        }]
+      })
+      document.body.appendChild(caption)
       const element = (response.page.length < 1) ? emptyList(false) :
           offersList(response, { favorites: false, exitCallback: navigateOffers } )
-      document.body.innerHTML = ""
       document.body.appendChild(element)
     }).catch((error) => displayError(error))
   }
@@ -54,6 +64,32 @@
       else return response.json()
     }).then((offer) => {
       showDealDialog(offer, { favorites: false, exitCallback: navigateOffers })
+    }).catch((error) => displayError(error))
+  }
+
+  function exportOffers() {
+    getOffersFile().then((response) => {
+      if (!response.ok) throw new Error(`Response status ${response.status}`)
+      const contentDisposition = response.headers.get('content-disposition')
+      let filename = 'downloaded-file'
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+?)"?(;|$)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+      return response.blob().then((blob) => {
+        const a = document.createElement('a');
+        const objectUrl = URL.createObjectURL(blob)
+        a.href = objectUrl
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(objectUrl);
+        }, 300);
+      })
     }).catch((error) => displayError(error))
   }
 </script>
